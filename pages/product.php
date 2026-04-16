@@ -68,6 +68,9 @@ if (get_num_rows($product_result) == 1) {
                 <p class="fs-4 fw-bold"><?php echo $product['name'] ?></p>
                 <span class="text-muted">ประเภท: <?php echo $type['name'] ?></span>
                 <p class="fs-2 fw-bold my-3">฿<?php echo number_format($product['price'], 2) ?></p>
+                <p class="text-muted mb-3">
+                    <small>ยอดคงเหลือ: <strong><?php echo $product['stock'] ?></strong> ชิ้น</small>
+                </p>
                 <div class="d-flex gap-3 align-items-center mb-3 adjust-align">
                     <button type="button" class="btn btn-outline-primary" id="decrease_qty">
                         <i class="bi bi-dash"></i>
