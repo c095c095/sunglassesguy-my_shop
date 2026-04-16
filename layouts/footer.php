@@ -6,7 +6,7 @@
 
         <ul class="nav col-md-4 justify-content-end">
             <li class="nav-item"><a href="?page=home" class="nav-link px-2 text-muted">หน้าแรก</a></li>
-            <li class="nav-item"><a href="?page=products" class="nav-link px-2 text-muted">สินค้าทั้งหมด</a></li>
+            <li class="nav-item"><a href="?page=tos-and-privacy" class="nav-link px-2 text-muted">ข้อกำหนดและนโยบาย</a></li>
             <li class="nav-item"><a href="?page=faq" class="nav-link px-2 text-muted">วิธีการสั่งซื้อ</a></li>
             <li class="nav-item"><a href="?page=contact" class="nav-link px-2 text-muted">ติดต่อเรา</a></li>
         </ul>
