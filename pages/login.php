@@ -45,6 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div class="mb-4">
                     <label for="password" class="form-label">รหัสผ่าน<span class="text-danger">*</span></label>
                     <input type="password" name="password" id="password" placeholder="รหัสผ่าน*" class="form-control py-2" required>
+                    <div class="text-end mt-2">
+                        <a href="?page=forgot-password" class="text-primary text-decoration-none small">ลืมรหัสผ่าน?</a>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary w-100 mt-4 py-2">เข้าสู่ระบบ</button>
                 <p class="text-center my-3">หรือ</p>

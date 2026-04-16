@@ -26,6 +26,7 @@ define('ROUTES', [
     'product' => 'รายละเอียดสินค้า',
     'faq' => 'วิธีการสั่งซื้อ',
     'contact' => 'ติดต่อเรา',
+    'forgot-password' => 'ลืมรหัสผ่าน',
 ]);
 define('ADMIN_ROUTE_PATH', 'admin/pages/');
 define('ADMIN_ROUTES', [
