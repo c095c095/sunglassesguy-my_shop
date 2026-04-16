@@ -99,6 +99,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'update_status') {
         $order_id = $_POST['order_id'];
         $new_status = $_POST['status'];
+        $cancel_and_restock = isset($_POST['cancel_and_restock']) && $_POST['cancel_and_restock'] == 'true';
+        
+        // Check if canceling and restocking
+        if ($new_status === '0' && $cancel_and_restock) {
+            // Get all order items
+            $items_sql = "SELECT product_id, qty FROM order_detail WHERE order_id = $order_id";
+            $items_result = query($items_sql);
+            $order_items = fetch($items_result);
+            
+            // Restore stock for each item
+            if (is_array($order_items) && count($order_items) > 0) {
+                foreach ($order_items as $item) {
+                    $product_id = $item['product_id'];
+                    $qty = $item['qty'];
+                    
+                    // Update product stock
+                    $restore_sql = "UPDATE product SET stock = stock + $qty WHERE id = $product_id";
+                    query($restore_sql);
+                }
+            }
+        }
         
         $update_data = [
             'status' => $new_status,
@@ -452,6 +473,18 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             </div>
 
+                            <div class="mb-3 ${order.status === '0' ? '' : 'd-none'}" id="restockGroup">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="cancelAndRestock" name="cancel_and_restock" value="true">
+                                    <label class="form-check-label" for="cancelAndRestock">
+                                        ยกเลิกและคืนสต็อก (คืนสินค้าเข้าคลังสินค้า)
+                                    </label>
+                                </div>
+                                <small class="form-text text-muted d-block mt-2">
+                                    เลือกตัวเลือกนี้เมื่อต้องการคืนสต็อกสินค้าทั้งหมดของคำสั่งซื้อนี้เข้าคลังสินค้า
+                                </small>
+                            </div>
+
                             <div class="table-responsive">
                                 <table class="table">
                                     <thead>
@@ -489,6 +522,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     const firstInput = document.getElementById('orderStatus');
                     if (firstInput) {
                         firstInput.focus();
+                        
+                        // Add event listener for status change to show/hide restock option
+                        firstInput.addEventListener('change', function() {
+                            const restockGroup = document.getElementById('restockGroup');
+                            const cancelAndRestockCheckbox = document.getElementById('cancelAndRestock');
+                            
+                            if (this.value === '0') {
+                                restockGroup.classList.remove('d-none');
+                            } else {
+                                restockGroup.classList.add('d-none');
+                                cancelAndRestockCheckbox.checked = false;
+                            }
+                        });
                     }
                 })
                 .catch(error => {
