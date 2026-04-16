@@ -18,11 +18,14 @@ if (get_num_rows($product_result) == 1) {
     $related_product_result = query($related_product_sql);
     $related_product = fetch($related_product_result);
 
-    $cart_result = get_by_condition('cart', [
-        'product_id' => $product_id,
-        'user_id' => $_SESSION['uid']
-    ]);
-    $cart = fetch($cart_result, 2);
+    $cart = null;
+    if (!empty($_SESSION['uid'])) {
+        $cart_result = get_by_condition('cart', [
+            'product_id' => $product_id,
+            'user_id' => $_SESSION['uid']
+        ]);
+        $cart = fetch($cart_result, 2);
+    }
 ?>
     <style>
         .adjust-align {
