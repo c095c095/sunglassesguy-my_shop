@@ -1,4 +1,6 @@
-```
+# FILE STRUCTURE
+
+```txt
 └── 📁my_shop
     └── 📁admin
         └── 📁layouts
