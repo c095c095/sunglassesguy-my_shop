@@ -2,7 +2,7 @@
 
 session_start(); // เริ่มต้นใช้งาน session
 date_default_timezone_set("Asia/Bangkok"); // ตั้งค่า timezone ให้เป็นเวลาประเทศไทย
-//error_reporting(0); // ปิดการแจ้งเตือน error
+error_reporting(0); // ปิดการแจ้งเตือน error
 
 include_once "./core/config/config_website.php"; // ไฟล์กำหนดค่าเว็บไซต์
 include_once "./core/services/route.php"; // ไฟล์จัดการเส้นทาง
