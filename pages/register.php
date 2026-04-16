@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <div class="container pt-5">
     <div class="text-center my-3">
-        <p class="display-5 fw-bold">ยินดีต้อนรับสู่ มาย ช็อป</p>
+        <p class="display-5 fw-bold">ยินดีต้อนรับสู่ ร้าน ก.กีฬา</p>
         <p class="h5">กรอกแบบฟอร์มด้านล่างเพื่อเริ่มต้นการสร้างบัญชีของคุณ <span class="text-primary">ฟรี</span></p>
     </div>
     <div class="d-flex justify-content-center align-items-center">

@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 <div class="container pt-5">
     <div class="text-center my-3">
-        <p class="display-5 fw-bold">ยินดีต้อนรับกลับ</p>
+        <p class="display-5 fw-bold">ยินดีต้อนรับ</p>
         <p class="h5">เข้าสู่ระบบได้ง่ายด้วย <span class="text-primary">ชื่อผู้ใช้</span> และ <span class="text-primary">รหัสผ่าน</span></p>
     </div>
     <div class="d-flex justify-content-center align-items-center">

@@ -607,9 +607,9 @@ function printOrder(orderId) {
                             <tr>
                                 <th width="50" class="text-center">ลำดับ</th>
                                 <th>รายการสินค้า</th>
-                                <th class="text-end" width="120">ราคาต่อชิ้น</th>
+                                <th class="text-end" width="100">ราคาต่อชิ้น</th>
                                 <th class="text-center" width="80">จำนวน</th>
-                                <th class="text-end" width="120">จำนวนเงิน</th>
+                                <th class="text-end" width="140">จำนวนเงิน(บาท)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -619,9 +619,9 @@ function printOrder(orderId) {
                                     <tr>
                                         <td class="text-center">${index + 1}</td>
                                         <td>${item.product_name}</td>
-                                        <td class="text-end">฿${parseFloat(item.product_price).toFixed(2)}</td>
+                                        <td class="text-end">${parseFloat(item.product_price).toFixed(2)}</td>
                                         <td class="text-center">${item.qty}</td>
-                                        <td class="text-end">฿${total.toFixed(2)}</td>
+                                        <td class="text-end">${total.toFixed(2)}</td>
                                     </tr>
                                 `;
                             }).join('')}
@@ -629,15 +629,15 @@ function printOrder(orderId) {
                         <tfoot>
                             <tr>
                                 <td colspan="4" class="text-end">รวมเป็นเงิน</td>
-                                <td class="text-end">฿${subtotal.toFixed(2)}</td>
+                                <td class="text-end">${subtotal.toFixed(2)}</td>
                             </tr>
                             <tr>
                                 <td colspan="4" class="text-end">ค่าจัดส่ง</td>
-                                <td class="text-end">฿${parseFloat(order.delivery_fee).toFixed(2)}</td>
+                                <td class="text-end">${parseFloat(order.delivery_fee).toFixed(2)}</td>
                             </tr>
                             <tr>
                                 <td colspan="4" class="text-end"><strong>จำนวนเงินทั้งสิ้น</strong></td>
-                                <td class="text-end"><strong>฿${(subtotal + parseFloat(order.delivery_fee)).toFixed(2)}</strong></td>
+                                <td class="text-end"><strong>${(subtotal + parseFloat(order.delivery_fee)).toFixed(2)}</strong></td>
                             </tr>
                         </tfoot>
                     </table>

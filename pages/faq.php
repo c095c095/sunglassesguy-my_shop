@@ -8,7 +8,7 @@
             </div>
         </div>
         <div class="text-center">
-            <img src="assets/images/how-to/step-1.png" class="img-fluid shadow rounded" alt="">
+            <img src="assets/images/how-to/step01.png" class="img-fluid shadow rounded" alt="">
         </div>
     </div>
     <div class="mb-4">
@@ -19,7 +19,7 @@
             </div>
         </div>
         <div class="text-center">
-            <img src="assets/images/how-to/step-2.png" class="img-fluid shadow rounded" alt="">
+            <img src="assets/images/how-to/step02.png" class="img-fluid shadow rounded" alt="">
         </div>
     </div>
     <div class="mb-4">
@@ -30,7 +30,7 @@
             </div>
         </div>
         <div class="text-center">
-            <img src="assets/images/how-to/step-3.png" class="img-fluid shadow rounded" alt="">
+            <img src="assets/images/how-to/step03.png" class="img-fluid shadow rounded" alt="">
         </div>
     </div>
     <div class="mb-4">
@@ -41,7 +41,7 @@
             </div>
         </div>
         <div class="text-center">
-            <img src="assets/images/how-to/step-4.png" class="img-fluid shadow rounded" alt="">
+            <img src="assets/images/how-to/step04.png" class="img-fluid shadow rounded" alt="">
         </div>
     </div>
     <div class="mb-4">
@@ -52,7 +52,7 @@
             </div>
         </div>
         <div class="text-center">
-            <img src="assets/images/how-to/step-5.png" class="img-fluid shadow rounded" alt="">
+            <img src="assets/images/how-to/step05.png" class="img-fluid shadow rounded" alt="">
         </div>
     </div>
     <div class="mb-4">
@@ -63,7 +63,7 @@
             </div>
         </div>
         <div class="text-center">
-            <img src="assets/images/how-to/step-6.png" class="img-fluid shadow rounded" alt="">
+            <img src="assets/images/how-to/step06.png" class="img-fluid shadow rounded" alt="">
         </div>
     </div>
     <div class="mb-4">
@@ -74,7 +74,7 @@
             </div>
         </div>
         <div class="text-center">
-            <img src="assets/images/how-to/step-7.png" class="img-fluid shadow rounded" alt="">
+            <img src="assets/images/how-to/step07.png" class="img-fluid shadow rounded" alt="">
         </div>
     </div>
 </div>
