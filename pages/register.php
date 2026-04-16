@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <div class="mb-4 form-check">
                     <input type="checkbox" name="agree" id="agree" class="form-check-input" required>
-                    <label for="agree" class="form-check-label" style="line-height: 25px;">ข้าพเจ้าได้อ่านและยอมรับ <a href="#">เงื่อนไขการให้บริการ</a> และ <a href="#">ข้อตกลงความเป็นส่วนตัว</a> แล้ว</label>
+                    <label for="agree" class="form-check-label" style="line-height: 25px;">ข้าพเจ้าได้อ่านและยอมรับ <a href="?page=tos-and-privacy#terms" target="_blank">เงื่อนไขการให้บริการ</a> และ <a href="?page=tos-and-privacy#privacy" target="_blank">ข้อตกลงความเป็นส่วนตัว</a> แล้ว</label>
                 </div>
                 <button type="submit" class="btn btn-primary w-100 mt-4 py-2">สร้างบัญชี</button>
                 <p class="text-center my-3">หรือ</p>

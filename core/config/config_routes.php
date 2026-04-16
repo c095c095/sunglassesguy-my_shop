@@ -27,6 +27,7 @@ define('ROUTES', [
     'faq' => 'วิธีการสั่งซื้อ',
     'contact' => 'ติดต่อเรา',
     'forgot-password' => 'ลืมรหัสผ่าน',
+    'tos-and-privacy' => 'ข้อกำหนดและนโยบายความเป็นส่วนตัว',
 ]);
 define('ADMIN_ROUTE_PATH', 'admin/pages/');
 define('ADMIN_ROUTES', [
