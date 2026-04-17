@@ -244,7 +244,7 @@ if (is_auth()) {
                                     </div>
                                     <div class="mb-3 form-check">
                                         <input type="checkbox" name="Privacy" id="Privacy" class="form-check-input" value="Y" required>
-                                        <label for="Privacy" class="form-check-label">คุณยอมรับ <a href="#">นโยบายส่วนตัว</a> และ <a href="#">ข้อตกลงในการใช้บริการ</a></label>
+                                        <label for="Privacy" class="form-check-label">คุณยอมรับ <a href="?page=tos-and-privacy#privacy" target="_blank">นโยบายส่วนตัว</a> และ <a href="?page=tos-and-privacy#terms" target="_blank">ข้อตกลงในการใช้บริการ</a></label>
                                     </div>
                                     <button type="submit" class="btn btn-primary w-100">ดำเนินการชำระเงิน</button>
                                 </div>
