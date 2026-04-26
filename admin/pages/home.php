@@ -1,6 +1,53 @@
 <?php
 include_once "../core/helpers/image_upload.php";
 
+// ── Cancel overdue unpaid orders (status=1, older than 7 days) ──────────────
+function cancel_order_and_restock($order_id)
+{
+    // Restore stock for each item in the order
+    $items_sql = "SELECT product_id, qty FROM order_detail WHERE order_id = " . (int) $order_id;
+    $items_result = query($items_sql);
+    $order_items = fetch($items_result);
+    if (is_array($order_items) && count($order_items) > 0) {
+        foreach ($order_items as $item) {
+            $pid = (int) $item['product_id'];
+            $qty = (int) $item['qty'];
+            query("UPDATE product SET stock = stock + $qty WHERE id = $pid");
+        }
+    }
+    // Set order status to 0 (cancelled)
+    update_by_id('order', (int) $order_id, ['status' => '0']);
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $home_action = $_POST['action'] ?? '';
+
+    // Cancel a single overdue order
+    if ($home_action === 'cancel_overdue_order') {
+        $oid = (int) ($_POST['order_id'] ?? 0);
+        if ($oid > 0) {
+            cancel_order_and_restock($oid);
+            show_alert('ยกเลิกคำสั่งซื้อ #ORDER-' . $oid . ' เรียบร้อยแล้ว');
+        }
+        reload_page();
+        exit();
+    }
+
+    // Cancel ALL overdue orders at once
+    if ($home_action === 'cancel_all_overdue') {
+        $overdue_ids_raw = $_POST['overdue_ids'] ?? '';
+        $overdue_ids = array_filter(array_map('intval', explode(',', $overdue_ids_raw)));
+        $count = 0;
+        foreach ($overdue_ids as $oid) {
+            cancel_order_and_restock($oid);
+            $count++;
+        }
+        show_alert('ยกเลิกคำสั่งซื้อที่ค้างชำระทั้งหมด ' . $count . ' รายการเรียบร้อยแล้ว');
+        reload_page();
+        exit();
+    }
+}
+
 // Handle edit product form submitted from home page modal
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'edit_from_home') {
     $id = $_POST['id'];
@@ -87,6 +134,14 @@ $sql_last_order = "SELECT * FROM `order` ORDER BY id DESC LIMIT 15";
 // รวม out-of-stock ไว้ใน query เดียว เพื่อใช้ทั้งสรุปและตาราง
 $sql_low_stock = "SELECT id, name, img, price, stock, type_id FROM product WHERE stock <= 10 ORDER BY stock ASC";
 $sql_out_of_stock = "SELECT COUNT(id) as total FROM product WHERE stock = 0";
+// คำสั่งซื้อที่ยังไม่ได้ชำระเงินและเกิน 7 วัน
+$sql_overdue_orders = "SELECT o.id, o.order_date, o.total_price, o.delivery_fee,
+    u.firstname, u.lastname
+    FROM `order` o
+    LEFT JOIN user u ON o.user_id = u.id
+    WHERE o.status = '1'
+      AND o.order_date <= DATE_SUB(NOW(), INTERVAL 7 DAY)
+    ORDER BY o.order_date ASC";
 
 $query_week_sale = query($sql_week_sale);
 $query_last_week_sale = query($sql_last_week_sale);
@@ -103,6 +158,7 @@ $query_top_sell = query($sql_top_sell);
 $query_last_order = query($sql_last_order);
 $query_low_stock = query($sql_low_stock);
 $query_out_of_stock = query($sql_out_of_stock);
+$overdue_orders = fetch(query($sql_overdue_orders));
 
 $week_sale = fetch($query_week_sale, 2);
 $last_week_sale = fetch($query_last_week_sale, 2);
@@ -216,6 +272,95 @@ $month_user_percent_color = get_percent_color($month_user_percent);
     // Auto-expand the table when there are out-of-stock or critical items
     $auto_expand = ($total_out_of_stock > 0 || $critical_count > 0) ? 'show' : '';
     ?>
+    <?php
+    // ── Overdue unpaid orders section ───────────────────────────────────────────
+    if (is_array($overdue_orders) && count($overdue_orders) > 0):
+        $overdue_ids = implode(',', array_column($overdue_orders, 'id'));
+        ?>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header d-flex align-items-center justify-content-between py-3 px-4">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fw-semibold">คำสั่งซื้อค้างชำระเกิน 7 วัน</span>
+                            <span class="badge text-bg-danger rounded-pill px-3 py-2">
+                                <?php echo count($overdue_orders); ?> รายการ
+                            </span>
+                        </div>
+                        <form method="POST" class="d-inline" id="cancelAllOverdueForm">
+                            <input type="hidden" name="action" value="cancel_all_overdue">
+                            <input type="hidden" name="overdue_ids" value="<?php echo $overdue_ids; ?>">
+                            <button type="button" class="btn btn-danger btn-sm"
+                                onclick="confirmCancelAll(<?php echo count($overdue_orders); ?>)">
+                                <i class="bi bi-x-circle-fill me-1"></i>
+                                ยกเลิกทั้งหมด <?php echo count($overdue_orders); ?> รายการ
+                            </button>
+                        </form>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <td class="small text-muted text-center" style="width:6rem;">รหัสคำสั่งซื้อ</td>
+                                        <td class="small text-muted">ชื่อลูกค้า</td>
+                                        <td class="small text-muted text-center">วันที่สั่งซื้อ</td>
+                                        <td class="small text-muted text-center">ค้างมา (วัน)</td>
+                                        <td class="small text-muted text-end">ราคารวม</td>
+                                        <td class="small text-muted text-center" style="width:9rem;">จัดการ</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($overdue_orders as $od):
+                                        $days_overdue = (int) floor((time() - strtotime($od['order_date'])) / 86400);
+                                        ?>
+                                        <tr>
+                                            <td class="text-center ps-3">
+                                                <a href="?page=order&id=<?php echo $od['id']; ?>"
+                                                    class="link-danger fw-semibold text-decoration-none text-nowrap">
+                                                    <?php echo format_order_id($od['id']); ?>
+                                                </a>
+                                            </td>
+                                            <td><?php echo htmlspecialchars($od['firstname'] . ' ' . $od['lastname']); ?></td>
+                                            <td class="text-center small text-muted">
+                                                <?php echo format_datetime_thai($od['order_date'], 2); ?>
+                                            </td>
+                                            <td class="text-center">
+                                                <span
+                                                    class="badge text-bg-<?php echo $days_overdue >= 14 ? 'danger' : 'warning text-dark'; ?> rounded-pill px-3">
+                                                    <?php echo $days_overdue; ?> วัน
+                                                </span>
+                                            </td>
+                                            <td class="text-end fw-semibold">
+                                                ฿<?php echo number_format($od['total_price'] + $od['delivery_fee'], 2); ?>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="d-flex gap-1 justify-content-center align-items-center">
+                                                    <a href="?page=order&id=<?php echo $od['id']; ?>"
+                                                        class="btn btn-sm btn-ghost-secondary py-0 px-2">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+                                                    <form method="POST" class="d-inline">
+                                                        <input type="hidden" name="action" value="cancel_overdue_order">
+                                                        <input type="hidden" name="order_id" value="<?php echo $od['id']; ?>">
+                                                        <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2"
+                                                            onclick="confirmCancelOne(<?php echo $od['id']; ?>, this.form)">
+                                                            ยกเลิก
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+
     <?php if ($has_alert): ?>
         <div class="row mb-4">
             <div class="col-12">
@@ -311,7 +456,7 @@ $month_user_percent_color = get_percent_color($month_user_percent);
                                                         <button type="button"
                                                             class="btn btn-sm btn-outline-primary py-0 px-2 small mt-3"
                                                             onclick="editProductFromHome(<?php echo (int) $product['id']; ?>)">
-                                                            <i class="bi bi-pencil-fill"></i> แก้ไข
+                                                            แก้ไข
                                                         </button>
                                                     </div>
                                                 </div>
@@ -527,6 +672,20 @@ $month_user_percent_color = get_percent_color($month_user_percent);
 </div>
 
 <script>
+    // Confirm & submit single cancel
+    function confirmCancelOne(orderId, form) {
+        if (confirm('ยืนยันการยกเลิกคำสั่งซื้อ #ORDER-' + orderId + '?\n\nระบบจะคืนสินค้ากลับเข้าสต็อกโดยอัตโนมัติ')) {
+            form.submit();
+        }
+    }
+
+    // Confirm & submit bulk cancel
+    function confirmCancelAll(count) {
+        if (confirm('ยืนยันการยกเลิกคำสั่งซื้อค้างชำระทั้งหมด ' + count + ' รายการ?\n\nระบบจะคืนสินค้ากลับเข้าสต็อกทุกรายการโดยอัตโนมัติ')) {
+            document.getElementById('cancelAllOverdueForm').submit();
+        }
+    }
+
     (function () {
         window.editProductFromHome = function (id) {
             fetch('../core/helpers/get_data.php?type=product&id=' + id)
