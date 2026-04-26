@@ -48,14 +48,18 @@ if (!is_admin()) {
             margin-right: 1.5rem;
         }
 
+        .show-print {
+            display: none !important;
+        }
+
         @media print {
-            /* Hide everything by default */
-            body * {
-                visibility: hidden;
-            }
 
             .hide-print {
                 display: none !important;
+            }
+
+            .show-print {
+                display: block !important;
             }
         }
     </style>

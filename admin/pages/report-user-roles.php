@@ -3,9 +3,9 @@
 
 // Permission definitions
 $permission_types = [
-    ['value' => '0', 'color' => 'secondary', 'label' => 'ระงับการใช้งาน', 'icon' => 'bi-slash-circle'],
-    ['value' => '1', 'color' => 'primary', 'label' => 'ผู้ใช้ทั่วไป', 'icon' => 'bi-person'],
-    ['value' => '2', 'color' => 'danger', 'label' => 'ผู้ดูแลระบบ', 'icon' => 'bi-shield-check'],
+    ['value' => '0', 'color' => 'secondary', 'label' => 'ระงับการใช้งาน'],
+    ['value' => '1', 'color' => 'primary', 'label' => 'ผู้ใช้ทั่วไป'],
+    ['value' => '2', 'color' => 'danger', 'label' => 'ผู้ดูแลระบบ'],
 ];
 
 // Get filter
@@ -39,7 +39,7 @@ $total_regular = get_count('user', ['permission' => '1']);
 $total_admin = get_count('user', ['permission' => '2']);
 
 // Pagination
-$current_page = isset($_GET['p']) ? max(1, (int)$_GET['p']) : 1;
+$current_page = isset($_GET['p']) ? max(1, (int) $_GET['p']) : 1;
 $per_page = 15;
 $total_pages = ceil($total_filtered / $per_page);
 $offset = ($current_page - 1) * $per_page;
@@ -86,8 +86,6 @@ $print_date = date('d/m/Y H:i:s');
     /* ===== Summary Cards ===== */
     .summary-card {
         border: none;
-        border-radius: 14px;
-        transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
     }
@@ -102,11 +100,6 @@ $print_date = date('d/m/Y H:i:s');
         background: var(--card-color);
     }
 
-    .summary-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
-    }
-
     .summary-card .card-body {
         padding: 1.25rem;
     }
@@ -119,7 +112,6 @@ $print_date = date('d/m/Y H:i:s');
         align-items: center;
         justify-content: center;
         font-size: 1.3rem;
-        color: white;
     }
 
     .summary-card .count {
@@ -218,52 +210,6 @@ $print_date = date('d/m/Y H:i:s');
         font-size: 0.85rem;
     }
 
-    /* ===== Print Styles ===== */
-    @media print {
-        .report-print-area,
-        .report-print-area * {
-            visibility: visible !important;
-        }
-
-        .report-print-area {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-        }
-
-        .report-header {
-            background: #6f42c1 !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-
-        .summary-card::before {
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-
-        .no-print {
-            display: none !important;
-        }
-
-        .report-table thead th {
-            background-color: #f8f9fc !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-
-        .permission-badge {
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-
-        .summary-icon {
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-    }
-
     /* ===== Pagination ===== */
     .report-pagination .page-link {
         border-radius: 8px;
@@ -283,44 +229,49 @@ $print_date = date('d/m/Y H:i:s');
         background-color: #f0e6ff;
         color: #6f42c1;
     }
+
+    @media print {
+        body {
+            background: white;
+        }
+
+        .report-paper {
+            min-width: 100vw;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            box-shadow: none;
+        }
+    }
 </style>
 
-<div class="container-fluid mb-3 report-print-area">
+<div class="container-fluid mb-3 hide-print">
     <!-- Report Header -->
-    <div class="report-header shadow">
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-                <i class="bi bi-shield-lock me-3" style="font-size: 2.2rem; opacity: 0.9;"></i>
-                <div>
-                    <h2 class="mb-0">รายงานสิทธิ์</h2>
-                    <span class="subtitle">
-                        <i class="bi bi-calendar3 me-1"></i>
-                        วันที่พิมพ์: <?php echo format_datetime_thai(date('Y-m-d H:i:s'), 1); ?>
-                    </span>
-                </div>
-            </div>
-            <div class="d-flex gap-2 no-print">
-                <a href="?page=reports" class="btn btn-back btn-outline-light">
-                    <i class="bi bi-arrow-left me-1"></i>กลับ
-                </a>
-                <button onclick="window.print();" class="btn btn-print">
-                    <i class="bi bi-printer me-1"></i>พิมพ์รายงาน
-                </button>
-            </div>
+    <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-0">
+            <h2>รายงานสิทธิ์</h2>
+            <button type="button" class="btn btn-dark" onclick="window.print();">
+                <i class="bi bi-printer me-2"></i>พิมพ์รายงาน
+            </button>
         </div>
+        <span class="subtitle mb-0">วันที่พิมพ์:
+            <?php echo format_datetime_thai(date('Y-m-d H:i:s'), 1); ?>
+        </span>
     </div>
 
     <!-- Summary Cards -->
     <div class="row g-3 mb-4">
         <div class="col-6 col-lg-3">
-            <div class="card summary-card shadow-sm" style="--card-color: #6f42c1;">
+            <div class="card summary-card shadow-sm">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <div class="count text-dark"><?php echo number_format($total_all); ?></div>
+                            <div class=" count text-dark">
+                                <?php echo number_format($total_all); ?>
+                            </div>
                             <div class="label">ผู้ใช้ทั้งหมด</div>
                         </div>
-                        <div class="summary-icon" style="background: linear-gradient(135deg, #6f42c1, #8b5cf6);">
+                        <div class="summary-icon">
                             <i class="bi bi-people-fill"></i>
                         </div>
                     </div>
@@ -328,14 +279,16 @@ $print_date = date('d/m/Y H:i:s');
             </div>
         </div>
         <div class="col-6 col-lg-3">
-            <div class="card summary-card shadow-sm" style="--card-color: #dc3545;">
+            <div class="card summary-card shadow-sm">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <div class="count text-dark"><?php echo number_format($total_admin); ?></div>
+                            <div class=" count text-dark">
+                                <?php echo number_format($total_admin); ?>
+                            </div>
                             <div class="label">ผู้ดูแลระบบ</div>
                         </div>
-                        <div class="summary-icon" style="background: linear-gradient(135deg, #dc3545, #e35d6a);">
+                        <div class="summary-icon">
                             <i class="bi bi-shield-check"></i>
                         </div>
                     </div>
@@ -343,14 +296,16 @@ $print_date = date('d/m/Y H:i:s');
             </div>
         </div>
         <div class="col-6 col-lg-3">
-            <div class="card summary-card shadow-sm" style="--card-color: #0d6efd;">
+            <div class="card summary-card shadow-sm">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <div class="count text-dark"><?php echo number_format($total_regular); ?></div>
+                            <div class=" count text-dark">
+                                <?php echo number_format($total_regular); ?>
+                            </div>
                             <div class="label">ผู้ใช้ทั่วไป</div>
                         </div>
-                        <div class="summary-icon" style="background: linear-gradient(135deg, #0d6efd, #3d8bfd);">
+                        <div class="summary-icon">
                             <i class="bi bi-person-fill"></i>
                         </div>
                     </div>
@@ -358,14 +313,16 @@ $print_date = date('d/m/Y H:i:s');
             </div>
         </div>
         <div class="col-6 col-lg-3">
-            <div class="card summary-card shadow-sm" style="--card-color: #6c757d;">
+            <div class="card summary-card shadow-sm">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <div class="count text-dark"><?php echo number_format($total_suspended); ?></div>
+                            <div class=" count text-dark">
+                                <?php echo number_format($total_suspended); ?>
+                            </div>
                             <div class="label">ระงับการใช้งาน</div>
                         </div>
-                        <div class="summary-icon" style="background: linear-gradient(135deg, #6c757d, #8c959d);">
+                        <div class="summary-icon">
                             <i class="bi bi-slash-circle"></i>
                         </div>
                     </div>
@@ -375,14 +332,14 @@ $print_date = date('d/m/Y H:i:s');
     </div>
 
     <!-- Filter & Search -->
-    <div class="card filter-card shadow-sm mb-4 no-print">
+    <div class="card filter-card shadow-sm mb-4">
         <div class="card-body py-3">
             <form method="GET" action="">
                 <input type="hidden" name="page" value="report-user-roles">
                 <div class="row g-3 align-items-end">
                     <div class="col-md-5">
                         <label class="form-label fw-semibold small text-muted mb-1">
-                            <i class="bi bi-search me-1"></i>ค้นหา
+                            ค้นหา
                         </label>
                         <input type="text" class="form-control" name="search"
                             placeholder="ค้นหาชื่อผู้ใช้, อีเมล, ชื่อ-นามสกุล..."
@@ -390,23 +347,23 @@ $print_date = date('d/m/Y H:i:s');
                     </div>
                     <div class="col-md-4">
                         <label class="form-label fw-semibold small text-muted mb-1">
-                            <i class="bi bi-funnel me-1"></i>กรองตามสิทธิ์
+                            กรองตามสิทธิ์
                         </label>
                         <select class="form-select" name="permission">
                             <option value="">ทุกระดับสิทธิ์</option>
                             <?php foreach ($permission_types as $perm): ?>
-                                <option value="<?php echo $perm['value']; ?>"
-                                    <?php echo $filter_permission === $perm['value'] ? 'selected' : ''; ?>>
+                                <option value="<?php echo $perm['value']; ?>" <?php echo $filter_permission === $perm['value'] ? 'selected' : ''; ?>>
                                     <?php echo $perm['label']; ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="col-md-3 d-flex gap-2">
-                        <button type="submit" class="btn btn-dark flex-grow-1" style="border-radius: 10px;">
-                            <i class="bi bi-search me-1"></i>ค้นหา
+                        <button type="submit" class="btn btn-primary flex-grow-1" style="border-radius: 10px;">
+                            ค้นหา
                         </button>
-                        <a href="?page=report-user-roles" class="btn btn-outline-secondary" style="border-radius: 10px;">
+                        <a href="?page=report-user-roles" class="btn btn-outline-secondary"
+                            style="border-radius: 10px;">
                             <i class="bi bi-arrow-counterclockwise"></i>
                         </a>
                     </div>
@@ -419,11 +376,11 @@ $print_date = date('d/m/Y H:i:s');
     <div class="card report-table-card shadow-sm">
         <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
             <h6 class="mb-0 fw-bold">
-                <i class="bi bi-table me-2 text-muted"></i>
                 รายละเอียดข้อมูลสิทธิ์ผู้ใช้
             </h6>
             <span class="badge bg-light text-dark border px-3 py-2" style="font-size: 0.8rem;">
-                ทั้งหมด <?php echo number_format($total_filtered); ?> รายการ
+                ทั้งหมด
+                <?php echo number_format($total_filtered); ?> รายการ
             </span>
         </div>
         <div class="card-body p-0">
@@ -445,42 +402,35 @@ $print_date = date('d/m/Y H:i:s');
                             <?php $i = $offset + 1; ?>
                             <?php foreach ($paged_users as $user): ?>
                                 <?php
-                                    $perm_color = 'secondary';
-                                    $perm_label = 'ไม่ทราบ';
-                                    $perm_icon = 'bi-question-circle';
-                                    foreach ($permission_types as $pt) {
-                                        if ($pt['value'] === $user['permission']) {
-                                            $perm_color = $pt['color'];
-                                            $perm_label = $pt['label'];
-                                            $perm_icon = $pt['icon'];
-                                            break;
-                                        }
+                                $perm_color = 'secondary';
+                                $perm_label = 'ไม่ทราบ';
+                                foreach ($permission_types as $pt) {
+                                    if ($pt['value'] === $user['permission']) {
+                                        $perm_color = $pt['color'];
+                                        $perm_label = $pt['label'];
+                                        break;
                                     }
-                                    // Generate avatar color based on permission
-                                    $avatar_colors = ['0' => '#6c757d', '1' => '#0d6efd', '2' => '#dc3545'];
-                                    $avatar_bg = $avatar_colors[$user['permission']] ?? '#6c757d';
-                                    $initials = mb_substr($user['firstname'], 0, 1);
+                                }
                                 ?>
                                 <tr>
-                                    <td class="text-center fw-semibold text-muted"><?php echo $i++; ?></td>
+                                    <td class="text-center fw-semibold text-muted">
+                                        <?php echo $i++; ?>
+                                    </td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <div class="user-avatar me-2" style="background: <?php echo $avatar_bg; ?>;">
-                                                <?php echo $initials; ?>
-                                            </div>
                                             <span class="fw-semibold"><?php echo htmlspecialchars($user['username']); ?></span>
                                         </div>
                                     </td>
-                                    <td><?php echo htmlspecialchars($user['firstname'] . ' ' . $user['lastname']); ?></td>
+                                    <td>
+                                        <?php echo htmlspecialchars($user['firstname'] . ' ' . $user['lastname']); ?>
+                                    </td>
                                     <td>
                                         <span class="text-muted">
-                                            <i class="bi bi-envelope me-1"></i>
                                             <?php echo htmlspecialchars($user['email']); ?>
                                         </span>
                                     </td>
                                     <td>
                                         <span class="text-muted">
-                                            <i class="bi bi-telephone me-1"></i>
                                             <?php echo htmlspecialchars($user['phone']); ?>
                                         </span>
                                     </td>
@@ -515,27 +465,35 @@ $print_date = date('d/m/Y H:i:s');
 
         <?php if ($total_pages > 1): ?>
             <!-- Pagination -->
-            <div class="card-footer bg-white d-flex justify-content-between align-items-center py-3 no-print">
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center py-3">
                 <div class="text-muted" style="font-size: 0.85rem;">
-                    แสดง <?php echo count($paged_users); ?> จาก <?php echo $total_filtered; ?> รายการ
-                    (หน้า <?php echo $current_page; ?>/<?php echo $total_pages; ?>)
+                    แสดง
+                    <?php echo count($paged_users); ?> จาก
+                    <?php echo $total_filtered; ?> รายการ
+                    (หน้า
+                    <?php echo $current_page; ?>/
+                    <?php echo $total_pages; ?>)
                 </div>
                 <nav>
                     <ul class="pagination report-pagination mb-0">
                         <li class="page-item <?php echo ($current_page <= 1) ? 'disabled' : ''; ?>">
-                            <a class="page-link" href="?page=report-user-roles&p=<?php echo $current_page - 1; ?>&search=<?php echo urlencode($search); ?>&permission=<?php echo urlencode($filter_permission); ?>">
+                            <a class="page-link"
+                                href="?page=report-user-roles&p=<?php echo $current_page - 1; ?>&search=<?php echo urlencode($search); ?>&permission=<?php echo urlencode($filter_permission); ?>">
                                 <i class="bi bi-chevron-left"></i>
                             </a>
                         </li>
                         <?php for ($i = 1; $i <= $total_pages; $i++): ?>
                             <li class="page-item <?php echo ($current_page == $i) ? 'active' : ''; ?>">
-                                <a class="page-link" href="?page=report-user-roles&p=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&permission=<?php echo urlencode($filter_permission); ?>">
+                                <a class="page-link" href=" ?page=report-user-roles&p=<?php echo $i; ?>&search=
+                        <?php echo urlencode($search); ?>&permission=
+                        <?php echo urlencode($filter_permission); ?>">
                                     <?php echo $i; ?>
                                 </a>
                             </li>
                         <?php endfor; ?>
                         <li class="page-item <?php echo ($current_page >= $total_pages) ? 'disabled' : ''; ?>">
-                            <a class="page-link" href="?page=report-user-roles&p=<?php echo $current_page + 1; ?>&search=<?php echo urlencode($search); ?>&permission=<?php echo urlencode($filter_permission); ?>">
+                            <a class=" page-link"
+                                href="?page=report-user-roles&p=<?php echo $current_page + 1; ?>&search=<?php echo urlencode($search); ?>&permission=<?php echo urlencode($filter_permission); ?>">
                                 <i class="bi bi-chevron-right"></i>
                             </a>
                         </li>
@@ -549,8 +507,60 @@ $print_date = date('d/m/Y H:i:s');
     <div class="text-center mt-3 text-muted d-none d-print-block" style="font-size: 0.8rem;">
         <hr>
         <p class="mb-1">
-            <strong><?php echo WEBSITE_NAME; ?></strong> — ระบบรายงานสิทธิ์ผู้ใช้
+            <strong>
+                <?php echo WEBSITE_NAME; ?></strong> — ระบบรายงานสิทธิ์ผู้ใช้
         </p>
-        <p class="mb-0">พิมพ์เมื่อ: <?php echo format_datetime_thai(date('Y-m-d H:i:s'), 1); ?></p>
+        <p class="mb-0">พิมพ์เมื่อ: <?php echo format_datetime_thai(date('Y-m-d H:i:s'), 1); ?>
+        </p>
+    </div>
+</div>
+
+<div class="show-print">
+    <div class="report-paper">
+        <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-0"
+                style="display: flex; justify-content: between">
+                <h1 style="font-weight: bold;">รายงานสิทธิ์</h1>
+                <h1 style="font-weight: bold;"><?= WEBSITE_NAME ?></h1>
+            </div>
+            <hr style="margin: 0;">
+            <div class="d-flex justify-content-between align-items-center mb-0"
+                style="display: flex; justify-content: between; color: rgba(33, 37, 41, 0.75);  ">
+                <p>พิมพ์โดย: <?= @$_SESSION['firstname'] . ' ' . @$_SESSION['lastname'] ?></p>
+                <p>พิมพ์เมื่อ: <?php echo format_datetime_thai(date('Y-m-d H:i:s'), 1); ?></p>
+            </div>
+        </div>
+        <p style="font-weight: bold; margin: 0;">สิทธิ์ผู้ใช้</p>
+        <div style="margin-left: 20px;">
+            <div class="d-flex justify-content-between align-items-center mb-0"
+                style="display: flex; justify-content: between">
+                <div>ผู้ใช้ทั้งหมด</div>
+                <div>
+                    <?= number_format($total_all) ?>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-0"
+                style="display: flex; justify-content: between">
+                <div>ผู้ดูแลระบบ</div>
+                <div>
+                    <?= number_format($total_admin) ?>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-0"
+                style="display: flex; justify-content: between">
+                <div>ผู้ใช้ทั่วไป</div>
+                <div>
+                    <?= number_format($total_regular) ?>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-0"
+                style="display: flex; justify-content: between">
+                <div>ระงับการใช้งาน</div>
+                <div>
+                    <?= number_format($total_ban) ?>
+                </div>
+            </div>
+        </div>
+        <hr class="my-3">
     </div>
 </div>
