@@ -1,7 +1,8 @@
 <?php
 // Orders management page for admin section
 
-function get_color_by_status($status) {
+function get_color_by_status($status)
+{
     switch ($status) {
         case '0':
             return ['secondary', 'ยกเลิก'];
@@ -23,7 +24,8 @@ function get_color_by_status($status) {
     }
 }
 
-function get_delivery_type_label($type) {
+function get_delivery_type_label($type)
+{
     switch ($type) {
         case '1':
             return 'ไปรษณีย์ไทย';
@@ -43,7 +45,7 @@ $statuses = [
 ];
 
 // Pagination setup
-$current_page = isset($_GET['p']) ? (int)$_GET['p'] : 1;
+$current_page = isset($_GET['p']) ? (int) $_GET['p'] : 1;
 $per_page = 10;
 $offset = ($current_page - 1) * $per_page;
 
@@ -95,37 +97,37 @@ $total_pages = ceil($total_orders / $per_page);
 // Handle status updates
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
-    
+
     if ($action === 'update_status') {
         $order_id = $_POST['order_id'];
         $new_status = $_POST['status'];
         $cancel_and_restock = isset($_POST['cancel_and_restock']) && $_POST['cancel_and_restock'] == 'true';
-        
+
         // Check if canceling and restocking
         if ($new_status === '0' && $cancel_and_restock) {
             // Get all order items
             $items_sql = "SELECT product_id, qty FROM order_detail WHERE order_id = $order_id";
             $items_result = query($items_sql);
             $order_items = fetch($items_result);
-            
+
             // Restore stock for each item
             if (is_array($order_items) && count($order_items) > 0) {
                 foreach ($order_items as $item) {
                     $product_id = $item['product_id'];
                     $qty = $item['qty'];
-                    
+
                     // Update product stock
                     $restore_sql = "UPDATE product SET stock = stock + $qty WHERE id = $product_id";
                     query($restore_sql);
                 }
             }
         }
-        
+
         $update_data = [
             'status' => $new_status,
             'tracking' => isset($_POST['tracking']) ? $_POST['tracking'] : ''
         ];
-        
+
         if (update_by_id('order', $order_id, $update_data)) {
             show_alert('อัปเดตสถานะสำเร็จ');
             reload_page();
@@ -148,27 +150,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <!-- Search Group -->
                     <div class="col-lg-6">
                         <label class="form-label">คำค้นหา</label>
-                        <input type="text" class="form-control" name="search" 
-                               placeholder="ค้นหา..." 
-                               value="<?php echo htmlspecialchars($search); ?>">
+                        <input type="text" class="form-control" name="search" placeholder="ค้นหา..."
+                            value="<?php echo htmlspecialchars($search); ?>">
                     </div>
 
                     <div class="col-lg-2">
                         <label class="form-label">ค้นหาตาม</label>
                         <select class="form-select" name="search_by">
-                            <option value="id" <?php echo $search_by === 'customer' ? '' : 'selected'; ?>>รหัสคำสั่งซื้อ</option>
-                            <option value="customer" <?php echo $search_by === 'customer' ? 'selected' : ''; ?>>ข้อมูลลูกค้า</option>
+                            <option value="id" <?php echo $search_by === 'customer' ? '' : 'selected'; ?>>รหัสคำสั่งซื้อ
+                            </option>
+                            <option value="customer" <?php echo $search_by === 'customer' ? 'selected' : ''; ?>>
+                                ข้อมูลลูกค้า</option>
                         </select>
                     </div>
-                    
+
                     <!-- Status Filter -->
                     <div class="col-lg-2">
                         <label class="form-label">สถานะ</label>
                         <select class="form-select" name="status">
                             <option value="">ทุกสถานะ</option>
                             <?php foreach ($statuses as $status): ?>
-                                <option value="<?php echo $status['value']; ?>" 
-                                        <?php echo $status_filter === $status['value'] ? 'selected' : ''; ?>>
+                                <option value="<?php echo $status['value']; ?>" <?php echo $status_filter === $status['value'] ? 'selected' : ''; ?>>
                                     <?php echo $status['label']; ?>
                                 </option>
                             <?php endforeach; ?>
@@ -189,13 +191,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class="col-lg-4">
                         <label class="form-label">วันที่เริ่มต้น</label>
-                        <input type="date" class="form-control" name="start_date" 
-                               value="<?php echo htmlspecialchars($start_date); ?>">
+                        <input type="date" class="form-control" name="start_date"
+                            value="<?php echo htmlspecialchars($start_date); ?>">
                     </div>
                     <div class="col-lg-4">
                         <label class="form-label">วันที่สิ้นสุด</label>
-                        <input type="date" class="form-control" name="end_date" 
-                               value="<?php echo htmlspecialchars($end_date); ?>">
+                        <input type="date" class="form-control" name="end_date"
+                            value="<?php echo htmlspecialchars($end_date); ?>">
                     </div>
                     <div class="col-lg-4">
                         <label class="form-label d-none d-lg-block">&nbsp;</label>
@@ -223,19 +225,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (count($orders) > 0) : ?>
-                            <?php foreach ($orders as $order) : ?>
+                        <?php if (count($orders) > 0): ?>
+                            <?php foreach ($orders as $order): ?>
                                 <tr>
                                     <td class="align-middle">
-                                        <a href="./?page=order&id=<?php echo $order['id']; ?>" class="text-decoration-none" target="_self">
+                                        <a href="./?page=order&id=<?php echo $order['id']; ?>" class="text-decoration-none"
+                                            target="_self">
                                             <?php echo format_order_id($order['id']); ?>
                                         </a>
                                     </td>
                                     <td class="align-middle">
-                                        <a href="?page=orders&search_by=customer&search=<?php echo $order['firstname'] . ' ' . $order['lastname']; ?>" class="text-decoration-none" target="_self">
+                                        <a href="?page=orders&search_by=customer&search=<?php echo $order['firstname'] . ' ' . $order['lastname']; ?>"
+                                            class="text-decoration-none" target="_self">
                                             <?php echo $order['firstname'] . ' ' . $order['lastname']; ?>
                                         </a><br>
-                                        <a href="?page=orders&search_by=customer&search=<?php echo $order['phone']; ?>" class="text-decoration-none" target="_self">
+                                        <a href="?page=orders&search_by=customer&search=<?php echo $order['phone']; ?>"
+                                            class="text-decoration-none" target="_self">
                                             <small style="color: rgb(91, 154, 253);"><?php echo $order['phone']; ?></small>
                                         </a>
                                     </td>
@@ -246,13 +251,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         ฿<?php echo number_format($order['total_price'] + $order['delivery_fee'], 2); ?>
                                     </td>
                                     <td class="align-middle text-center">
-                                        <?php 
-                                            $status = get_color_by_status($order['status']);
+                                        <?php
+                                        $status = get_color_by_status($order['status']);
                                         ?>
                                         <span class="badge bg-<?php echo $status[0]; ?>">
                                             <?php echo $status[1]; ?>
                                         </span>
-                                        <?php if ($order['status'] >= 3 && !empty($order['tracking'])) : ?>
+                                        <?php if ($order['status'] >= 3 && !empty($order['tracking'])): ?>
                                             <br>
                                             <small class="text-muted"><?php echo $order['tracking']; ?></small>
                                         <?php endif; ?>
@@ -268,15 +273,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 </a>
                                             </li>
                                             <li>
-                                                <button type="button" class="dropdown-item view-order" 
-                                                    data-bs-toggle="modal" 
-                                                    data-bs-target="#orderDetailModal"
-                                                    data-id="<?php echo $order['id']; ?>">
+                                                <button type="button" class="dropdown-item view-order" data-bs-toggle="modal"
+                                                    data-bs-target="#orderDetailModal" data-id="<?php echo $order['id']; ?>">
                                                     อัปเดตสถานะ
                                                 </button>
                                             </li>
                                             <li>
-                                                <button type="button" class="dropdown-item" onclick="printOrder(<?php echo $order['id']; ?>)">
+                                                <button type="button" class="dropdown-item"
+                                                    onclick="printOrder(<?php echo $order['id']; ?>)">
                                                     พิมพ์
                                                 </button>
                                             </li>
@@ -284,7 +288,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
-                        <?php else : ?>
+                        <?php else: ?>
                             <tr>
                                 <td colspan="6" class="text-center py-4">ไม่พบข้อมูลคำสั่งซื้อ</td>
                             </tr>
@@ -300,15 +304,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <nav aria-label="Page navigation">
                     <ul class="pagination mb-0">
                         <li class="page-item <?php echo ($current_page <= 1) ? 'disabled' : ''; ?>">
-                            <a class="page-link" href="?page=orders&p=<?php echo $current_page-1; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo urlencode($search_by); ?>&status=<?php echo urlencode($status_filter); ?>">ก่อนหน้า</a>
+                            <a class="page-link"
+                                href="?page=orders&p=<?php echo $current_page - 1; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo urlencode($search_by); ?>&status=<?php echo urlencode($status_filter); ?>&start_date=<?php echo urlencode($start_date); ?>&end_date=<?php echo urlencode($end_date); ?>">ก่อนหน้า</a>
                         </li>
-                        <?php for($i = 1; $i <= $total_pages; $i++): ?>
+                        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
                             <li class="page-item <?php echo ($current_page == $i) ? 'active' : ''; ?>">
-                                <a class="page-link" href="?page=orders&p=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo urlencode($search_by); ?>&status=<?php echo urlencode($status_filter); ?>"><?php echo $i; ?></a>
+                                <a class="page-link"
+                                    href="?page=orders&p=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo urlencode($search_by); ?>&status=<?php echo urlencode($status_filter); ?>&start_date=<?php echo urlencode($start_date); ?>&end_date=<?php echo urlencode($end_date); ?>"><?php echo $i; ?></a>
                             </li>
                         <?php endfor; ?>
                         <li class="page-item <?php echo ($current_page >= $total_pages) ? 'disabled' : ''; ?>">
-                            <a class="page-link" href="?page=orders&p=<?php echo $current_page+1; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo urlencode($search_by); ?>&status=<?php echo urlencode($status_filter); ?>">ต่อไป</a>
+                            <a class="page-link"
+                                href="?page=orders&p=<?php echo $current_page + 1; ?>&search=<?php echo urlencode($search); ?>&search_by=<?php echo urlencode($search_by); ?>&status=<?php echo urlencode($status_filter); ?>&start_date=<?php echo urlencode($start_date); ?>&end_date=<?php echo urlencode($end_date); ?>">ต่อไป</a>
                         </li>
                     </ul>
                 </nav>
@@ -360,17 +367,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const orderDetailModal = document.getElementById('orderDetailModal');
-    const bsModal = new bootstrap.Modal(orderDetailModal);
+    document.addEventListener('DOMContentLoaded', function () {
+        const orderDetailModal = document.getElementById('orderDetailModal');
+        const bsModal = new bootstrap.Modal(orderDetailModal);
 
-    // Handle view order button click
-    document.querySelectorAll('.view-order').forEach(button => {
-        button.addEventListener('click', function() {
-            const orderId = this.dataset.id;
-            
-            // Show loading state
-            document.getElementById('orderDetailContent').innerHTML = `
+        // Handle view order button click
+        document.querySelectorAll('.view-order').forEach(button => {
+            button.addEventListener('click', function () {
+                const orderId = this.dataset.id;
+
+                // Show loading state
+                document.getElementById('orderDetailContent').innerHTML = `
                 <div class="text-center py-5">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">กำลังโหลด...</span>
@@ -378,37 +385,37 @@ document.addEventListener('DOMContentLoaded', function() {
                     <p class="mt-2">กำลังโหลดข้อมูล...</p>
                 </div>
             `;
-            
-            fetch(`../core/helpers/get_data.php?type=order&id=${orderId}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.error) {
-                        throw new Error(data.error);
-                    }
 
-                    const order = data.order;
-                    const items = data.items;
-                    const payment = data.payment;
-                    
-                    let statusOptions = '';
-                    <?php foreach ($statuses as $status): ?>
-                        statusOptions += `
+                fetch(`../core/helpers/get_data.php?type=order&id=${orderId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.error) {
+                            throw new Error(data.error);
+                        }
+
+                        const order = data.order;
+                        const items = data.items;
+                        const payment = data.payment;
+
+                        let statusOptions = '';
+                        <?php foreach ($statuses as $status): ?>
+                            statusOptions += `
                             <option value="<?php echo $status['value']; ?>" 
                                     class="text-<?php echo $status['color']; ?>"
                                     ${order.status === '<?php echo $status['value']; ?>' ? 'selected' : ''}>
                                 <?php echo $status['label']; ?>
                             </option>
                         `;
-                    <?php endforeach; ?>
+                        <?php endforeach; ?>
 
-                    let itemsHtml = '';
-                    items.forEach(item => {
-                        itemsHtml += `
+                        let itemsHtml = '';
+                        items.forEach(item => {
+                            itemsHtml += `
                             <tr>
                                 <td>
                                     <img src="../upload/product/${item.product_img}" 
@@ -422,11 +429,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <td class="text-end">฿${(item.product_price * item.qty).toFixed(2)}</td>
                             </tr>
                         `;
-                    });
+                        });
 
-                    let paymentHtml = '';
-                    if (payment) {
-                        paymentHtml = `
+                        let paymentHtml = '';
+                        if (payment) {
+                            paymentHtml = `
                             <div class="mb-3">
                                 <h6>ข้อมูลการชำระเงิน</h6>
                                 <p class="mb-1">วันที่ชำระ: ${payment.pay_date} ${payment.pay_time}</p>
@@ -437,9 +444,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                      style="max-width: 200px;">
                             </div>
                         `;
-                    }
+                        }
 
-                    document.getElementById('orderDetailContent').innerHTML = `
+                        document.getElementById('orderDetailContent').innerHTML = `
                         <form id="updateOrderForm" method="POST">
                             <input type="hidden" name="action" value="update_status">
                             <input type="hidden" name="order_id" value="${order.id}">
@@ -518,69 +525,69 @@ document.addEventListener('DOMContentLoaded', function() {
                         </form>
                     `;
 
-                    // Set focus to the first focusable element
-                    const firstInput = document.getElementById('orderStatus');
-                    if (firstInput) {
-                        firstInput.focus();
-                        
-                        // Add event listener for status change to show/hide restock option
-                        firstInput.addEventListener('change', function() {
-                            const restockGroup = document.getElementById('restockGroup');
-                            const cancelAndRestockCheckbox = document.getElementById('cancelAndRestock');
-                            
-                            if (this.value === '0') {
-                                restockGroup.classList.remove('d-none');
-                            } else {
-                                restockGroup.classList.add('d-none');
-                                cancelAndRestockCheckbox.checked = false;
-                            }
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('orderDetailContent').innerHTML = `
+                        // Set focus to the first focusable element
+                        const firstInput = document.getElementById('orderStatus');
+                        if (firstInput) {
+                            firstInput.focus();
+
+                            // Add event listener for status change to show/hide restock option
+                            firstInput.addEventListener('change', function () {
+                                const restockGroup = document.getElementById('restockGroup');
+                                const cancelAndRestockCheckbox = document.getElementById('cancelAndRestock');
+
+                                if (this.value === '0') {
+                                    restockGroup.classList.remove('d-none');
+                                } else {
+                                    restockGroup.classList.add('d-none');
+                                    cancelAndRestockCheckbox.checked = false;
+                                }
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('orderDetailContent').innerHTML = `
                         <div class="alert alert-danger" role="alert">
                             <i class="bi bi-exclamation-triangle me-2"></i>
                             เกิดข้อผิดพลาดในการโหลดข้อมูล: ${error.message}
                         </div>
                     `;
-                });
+                    });
+            });
+        });
+
+        // Handle update status button click
+        document.getElementById('updateStatusBtn').addEventListener('click', function () {
+            document.getElementById('updateOrderForm').submit();
+        });
+
+        // Handle modal events
+        orderDetailModal.addEventListener('hidden.bs.modal', function () {
+            document.getElementById('orderDetailContent').innerHTML = '';
+        });
+
+        orderDetailModal.addEventListener('shown.bs.modal', function () {
+            const firstInput = document.getElementById('orderStatus');
+            if (firstInput) {
+                firstInput.focus();
+            }
         });
     });
 
-    // Handle update status button click
-    document.getElementById('updateStatusBtn').addEventListener('click', function() {
-        document.getElementById('updateOrderForm').submit();
-    });
+    // Add date range clear function
+    function clearDateRange() {
+        document.querySelector('input[name="start_date"]').value = '';
+        document.querySelector('input[name="end_date"]').value = '';
+        // Submit the form after clearing
+        document.querySelector('form').submit();
+    }
 
-    // Handle modal events
-    orderDetailModal.addEventListener('hidden.bs.modal', function () {
-        document.getElementById('orderDetailContent').innerHTML = '';
-    });
+    function printOrder(orderId) {
+        console.log('printOrder', orderId);
+        const printModal = new bootstrap.Modal(document.getElementById('printOrderModal'));
 
-    orderDetailModal.addEventListener('shown.bs.modal', function () {
-        const firstInput = document.getElementById('orderStatus');
-        if (firstInput) {
-            firstInput.focus();
-        }
-    });
-});
-
-// Add date range clear function
-function clearDateRange() {
-    document.querySelector('input[name="start_date"]').value = '';
-    document.querySelector('input[name="end_date"]').value = '';
-    // Submit the form after clearing
-    document.querySelector('form').submit();
-}
-
-function printOrder(orderId) {
-    console.log('printOrder', orderId);
-    const printModal = new bootstrap.Modal(document.getElementById('printOrderModal'));
-    
-    // Show loading state
-    document.getElementById('printOrderContent').innerHTML = `
+        // Show loading state
+        document.getElementById('printOrderContent').innerHTML = `
         <div class="text-center py-5">
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">กำลังโหลด...</span>
@@ -588,31 +595,31 @@ function printOrder(orderId) {
             <p class="mt-2">กำลังโหลดข้อมูล...</p>
         </div>
     `;
-    
-    // Show modal
-    printModal.show();
-    
-    // Fetch order data
-    fetch(`../core/helpers/get_data.php?type=order&id=${orderId}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                throw new Error(data.error);
-            }
 
-            const order = data.order;
-            const items = data.items;
-            const payment = data.payment;
-            const buyer = data.buyer;
-            const status = getStatusLabel(order.status);
-            
-            let itemsHtml = '';
-            let subtotal = 0;
-            
-            items.forEach(item => {
-                const total = item.product_price * item.qty;
-                subtotal += total;
-                itemsHtml += `
+        // Show modal
+        printModal.show();
+
+        // Fetch order data
+        fetch(`../core/helpers/get_data.php?type=order&id=${orderId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                const order = data.order;
+                const items = data.items;
+                const payment = data.payment;
+                const buyer = data.buyer;
+                const status = getStatusLabel(order.status);
+
+                let itemsHtml = '';
+                let subtotal = 0;
+
+                items.forEach(item => {
+                    const total = item.product_price * item.qty;
+                    subtotal += total;
+                    itemsHtml += `
                     <tr>
                         <td>${item.product_name}</td>
                         <td class="text-end">฿${parseFloat(item.product_price).toFixed(2)}</td>
@@ -620,9 +627,9 @@ function printOrder(orderId) {
                         <td class="text-end">฿${total.toFixed(2)}</td>
                     </tr>
                 `;
-            });
+                });
 
-            document.getElementById('printOrderContent').innerHTML = `
+                document.getElementById('printOrderContent').innerHTML = `
                 <div class="print-content p-3">
                     <div class="text-center mb-4">
                         <h3 class="mb-2">ใบเสร็จรับเงิน</h3>
@@ -660,8 +667,8 @@ function printOrder(orderId) {
                         </thead>
                         <tbody>
                             ${items.map((item, index) => {
-                                const total = item.product_price * item.qty;
-                                return `
+                    const total = item.product_price * item.qty;
+                    return `
                                     <tr>
                                         <td class="text-center">${index + 1}</td>
                                         <td>${item.product_name}</td>
@@ -670,7 +677,7 @@ function printOrder(orderId) {
                                         <td class="text-end">${total.toFixed(2)}</td>
                                     </tr>
                                 `;
-                            }).join('')}
+                }).join('')}
                         </tbody>
                         <tfoot>
                             <tr>
@@ -711,34 +718,34 @@ function printOrder(orderId) {
                     </div>
                 </div>
             `;
-        })
-        .catch(error => {
-            document.getElementById('printOrderContent').innerHTML = `
+            })
+            .catch(error => {
+                document.getElementById('printOrderContent').innerHTML = `
                 <div class="alert alert-danger" role="alert">
                     <i class="bi bi-exclamation-triangle me-2"></i>
                     เกิดข้อผิดพลาดในการโหลดข้อมูล: ${error.message}
                 </div>
             `;
-        });
-}
+            });
+    }
 
-function formatOrderId(id) {
-    return '#ORDER-' + id.toString();
-}
+    function formatOrderId(id) {
+        return '#ORDER-' + id.toString();
+    }
 
-function getStatusLabel(status) {
-    const statuses = {
-        '0': 'ยกเลิก',
-        '1': 'รอชำระเงิน',
-        '2': 'รอตรวจสอบ',
-        '3': 'รอจัดส่ง',
-        '4': 'จัดส่งสำเร็จ'
-    };
-    return statuses[status] || 'ไม่ทราบสถานะ';
-}
+    function getStatusLabel(status) {
+        const statuses = {
+            '0': 'ยกเลิก',
+            '1': 'รอชำระเงิน',
+            '2': 'รอตรวจสอบ',
+            '3': 'รอจัดส่ง',
+            '4': 'จัดส่งสำเร็จ'
+        };
+        return statuses[status] || 'ไม่ทราบสถานะ';
+    }
 
-// Add print styles
-const printStyles = `
+    // Add print styles
+    const printStyles = `
     @media print {
         /* Reset body and html for printing */
         html, body {
@@ -817,7 +824,7 @@ const printStyles = `
     }
 `;
 
-const styleSheet = document.createElement("style");
-styleSheet.innerText = printStyles;
-document.head.appendChild(styleSheet);
-</script> 
+    const styleSheet = document.createElement("style");
+    styleSheet.innerText = printStyles;
+    document.head.appendChild(styleSheet);
+</script>
