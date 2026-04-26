@@ -43,4 +43,13 @@ define('ADMIN_ROUTES', [
     'orders' => 'รายการคำสั่งซื้อ',
     'order' => 'รายละเอียดการสั่งซื้อ',
     'reports' => 'รายงาน',
+    'report-user-roles' => 'รายงานสิทธิ์',
+    'report-users' => 'รายงานสมาชิก',
+    'report-product-types' => 'รายงานประเภทสินค้า',
+    'report-products' => 'รายงานข้อมูลสินค้า',
+    'report-sales' => 'รายงานขายสินค้า',
+    'report-payments' => 'รายงานการแจ้งชำระเงิน',
+    'report-product-stocks' => 'รายงานยอดสินค้า',
+    'report-best-sellers' => 'รายงานสินค้าขายดี',
+    'report-revenue' => 'รายงานยอดขาย',
 ]);

@@ -139,8 +139,45 @@ function is_active($page)
             </button>
             <div class="collapse show" id="report-collapse">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li><a href="?page=reports"
+                    <li>
+                        <a href="?page=reports"
                             class="link-body-emphasis d-inline-flex <?php echo is_active('reports'); ?>">รายงานทั้งหมด</a>
+                    </li>
+                    <li>
+                        <a href="?page=report-user-roles"
+                            class="link-body-emphasis d-inline-flex <?php echo is_active('report-user-roles'); ?>">รายงานสิทธิ์</a>
+                    </li>
+                    <li>
+                        <a href="?page=report-users"
+                            class="link-body-emphasis d-inline-flex <?php echo is_active('report-users'); ?>">รายงานสมาชิก</a>
+                    </li>
+                    <li>
+                        <a href="?page=report-product-types"
+                            class="link-body-emphasis d-inline-flex <?php echo is_active('report-product-types'); ?>">รายงานประเภทสินค้า</a>
+                    </li>
+                    <li>
+                        <a href="?page=report-products"
+                            class="link-body-emphasis d-inline-flex <?php echo is_active('report-products'); ?>">รายงานข้อมูลสินค้า</a>
+                    </li>
+                    <li>
+                        <a href="?page=report-sales"
+                            class="link-body-emphasis d-inline-flex <?php echo is_active('report-sales'); ?>">รายงานขายสินค้า</a>
+                    </li>
+                    <li>
+                        <a href="?page=report-payments"
+                            class="link-body-emphasis d-inline-flex <?php echo is_active('report-payments'); ?>">รายงานการแจ้งชำระเงิน</a>
+                    </li>
+                    <li>
+                        <a href="?page=report-product-stocks"
+                            class="link-body-emphasis d-inline-flex <?php echo is_active('report-product-stocks'); ?>">รายงานยอดสินค้า</a>
+                    </li>
+                    <li>
+                        <a href="?page=report-best-sellers"
+                            class="link-body-emphasis d-inline-flex <?php echo is_active('report-best-sellers'); ?>">รายงานสินค้าขายดี</a>
+                    </li>
+                    <li>
+                        <a href="?page=report-revenue"
+                            class="link-body-emphasis d-inline-flex <?php echo is_active('report-revenue'); ?>">รายงานยอดขาย</a>
                     </li>
                 </ul>
             </div>
