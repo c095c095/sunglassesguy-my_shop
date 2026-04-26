@@ -42,4 +42,5 @@ define('ADMIN_ROUTES', [
     'product_types' => 'ประเภทสินค้า',
     'orders' => 'รายการคำสั่งซื้อ',
     'order' => 'รายละเอียดการสั่งซื้อ',
+    'reports' => 'รายงาน',
 ]);

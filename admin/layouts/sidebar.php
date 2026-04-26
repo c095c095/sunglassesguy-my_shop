@@ -1,5 +1,6 @@
 <?php
-function is_active($page) {
+function is_active($page)
+{
     if (is_array($page)) {
         return in_array(get_current_page(), $page) ? 'active' : '';
     }
@@ -74,41 +75,73 @@ function is_active($page) {
 </style>
 
 <div class="flex-shrink-0 p-3 bg-white shadow-sm sidebar hide-print">
-    <a class="text-dark fw-bold text-decoration-none fs-5 pb-3 mb-3 d-flex border-bottom" href="?page=home"><?php echo WEBSITE_NAME ?></a>
+    <a class="text-dark fw-bold text-decoration-none fs-5 pb-3 mb-3 d-flex border-bottom"
+        href="?page=home"><?php echo WEBSITE_NAME ?></a>
     <ul class="list-unstyled ps-0">
         <li class="mb-1">
-            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 w-100" data-bs-toggle="collapse" data-bs-target="#main-collapse" aria-expanded="true">
+            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 w-100"
+                data-bs-toggle="collapse" data-bs-target="#main-collapse" aria-expanded="true">
                 ทั่วไป
             </button>
             <div class="collapse show" id="main-collapse">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li><a href="?page=home" class="link-body-emphasis d-inline-flex <?php echo is_active('home'); ?>">หน้าแรก</a></li>
-                    <li><a href="?page=users" class="link-body-emphasis d-inline-flex <?php echo is_active('users'); ?>">รายการผู้ใช้</a></li>
-                    <li><a href="?page=banners" class="link-body-emphasis d-inline-flex <?php echo is_active('banners'); ?>">ป้ายโฆษณา</a></li>
+                    <li><a href="?page=home"
+                            class="link-body-emphasis d-inline-flex <?php echo is_active('home'); ?>">หน้าแรก</a></li>
+                    <li><a href="?page=users"
+                            class="link-body-emphasis d-inline-flex <?php echo is_active('users'); ?>">รายการผู้ใช้</a>
+                    </li>
+                    <li><a href="?page=banners"
+                            class="link-body-emphasis d-inline-flex <?php echo is_active('banners'); ?>">ป้ายโฆษณา</a>
+                    </li>
                 </ul>
             </div>
         </li>
         <li class="mb-1">
-            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 w-100" data-bs-toggle="collapse" data-bs-target="#product-collapse" aria-expanded="true">
+            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 w-100"
+                data-bs-toggle="collapse" data-bs-target="#product-collapse" aria-expanded="true">
                 สินค้า
             </button>
             <div class="collapse show" id="product-collapse">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li><a href="?page=products" class="link-body-emphasis d-inline-flex <?php echo is_active('products'); ?>">รายการสินค้า</a></li>
-                    <li><a href="?page=product_stocks" class="link-body-emphasis d-inline-flex <?php echo is_active('product_stocks'); ?>">ตรวจสอบสินค้าคงคลัง</a></li>
-                    <li><a href="?page=product_types" class="link-body-emphasis d-inline-flex <?php echo is_active('product_types'); ?>">ประเภทสินค้า</a></li>
+                    <li><a href="?page=products"
+                            class="link-body-emphasis d-inline-flex <?php echo is_active('products'); ?>">รายการสินค้า</a>
+                    </li>
+                    <li><a href="?page=product_stocks"
+                            class="link-body-emphasis d-inline-flex <?php echo is_active('product_stocks'); ?>">ตรวจสอบสินค้าคงคลัง</a>
+                    </li>
+                    <li><a href="?page=product_types"
+                            class="link-body-emphasis d-inline-flex <?php echo is_active('product_types'); ?>">ประเภทสินค้า</a>
+                    </li>
                 </ul>
             </div>
         </li>
         <li class="mb-1">
-            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 w-100" data-bs-toggle="collapse" data-bs-target="#order-collapse" aria-expanded="true">
+            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 w-100"
+                data-bs-toggle="collapse" data-bs-target="#order-collapse" aria-expanded="true">
                 คำสั่งซื้อ
             </button>
             <div class="collapse show" id="order-collapse">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li><a href="?page=orders" class="link-body-emphasis d-inline-flex <?php echo is_active('orders'); ?>">รายการคำสั่งซื้อทั้งหมด</a></li>
-                    <li><a href="?page=orders&status=2" class="link-body-emphasis d-inline-flex">รายการคำสั่งซื้อรอตรวจสอบ</a></li>
-                    <li><a href="?page=orders&status=3" class="link-body-emphasis d-inline-flex">รายการคำสั่งซื้อรอจัดส่ง</a></li>
+                    <li><a href="?page=orders"
+                            class="link-body-emphasis d-inline-flex <?php echo is_active('orders'); ?>">รายการคำสั่งซื้อทั้งหมด</a>
+                    </li>
+                    <li><a href="?page=orders&status=2"
+                            class="link-body-emphasis d-inline-flex">รายการคำสั่งซื้อรอตรวจสอบ</a></li>
+                    <li><a href="?page=orders&status=3"
+                            class="link-body-emphasis d-inline-flex">รายการคำสั่งซื้อรอจัดส่ง</a></li>
+                </ul>
+            </div>
+        </li>
+        <li class="mb-1">
+            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 w-100"
+                data-bs-toggle="collapse" data-bs-target="#report-collapse" aria-expanded="true">
+                การจัดการรายงาน
+            </button>
+            <div class="collapse show" id="report-collapse">
+                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                    <li><a href="?page=reports"
+                            class="link-body-emphasis d-inline-flex <?php echo is_active('reports'); ?>">รายงานทั้งหมด</a>
+                    </li>
                 </ul>
             </div>
         </li>

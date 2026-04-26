@@ -129,7 +129,7 @@ $sql_top_sell = "SELECT p.*, SUM(od.qty) as total_quantity
     WHERE o.status = '4'
     GROUP BY p.id
     ORDER BY total_quantity DESC
-    LIMIT 25";
+                                            LIMIT 15";
 $sql_last_order = "SELECT * FROM `order` ORDER BY id DESC LIMIT 15";
 // รวม out-of-stock ไว้ใน query เดียว เพื่อใช้ทั้งสรุปและตาราง
 $sql_low_stock = "SELECT id, name, img, price, stock, type_id FROM product WHERE stock <= 10 ORDER BY stock ASC";
@@ -475,7 +475,7 @@ $month_user_percent_color = get_percent_color($month_user_percent);
         <div class="col-8">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header">
-                    <span>สินค้าขายดี</span>
+                    <span>15 สินค้าขายดี</span>
                 </div>
                 <div class="card-body p-0 overflow-y-auto" style="max-height: 30rem;">
                     <?php
@@ -488,6 +488,7 @@ $month_user_percent_color = get_percent_color($month_user_percent);
                                         <td class="small text-muted text-center">ชื่อ</td>
                                         <td class="small text-muted text-end">ราคา</td>
                                         <td class="small text-muted text-center">ประเภท</td>
+                                        <td class="small text-muted text-center">ขายแล้ว</td>
                                         <td class="small text-muted text-center">จัดการ</td>
                                     </tr>
                                 </thead>
@@ -511,6 +512,9 @@ $month_user_percent_color = get_percent_color($month_user_percent);
                                             <td class="align-middle text-center">
                                                 <a href="?page=products&type=<?php echo $product['type_id'] ?>"
                                                     class="link-primary text-decoration-none"><?php echo $type['name'] ?></a>
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                <?php echo number_format($product['total_quantity']) ?> ชิ้น
                                             </td>
                                             <td class="align-middle dropdown">
                                                 <button type="button" class="btn w-100 border-0" data-bs-toggle="dropdown">
