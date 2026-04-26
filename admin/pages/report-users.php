@@ -460,35 +460,35 @@ $paged_users = array_slice($users, $offset, $per_page);
                 style="display: flex; justify-content: between">
                 <div>สมาชิกทั้งหมด</div>
                 <div>
-                    <?= number_format($total_all) ?>
+                    <?= number_format($total_all) ?> คน
                 </div>
             </div>
             <div class="d-flex justify-content-between align-items-center mb-0"
                 style="display: flex; justify-content: between">
                 <div>ผู้ใช้ทั่วไป</div>
                 <div>
-                    <?= number_format($total_regular) ?>
+                    <?= number_format($total_regular) ?> คน
                 </div>
             </div>
             <div class="d-flex justify-content-between align-items-center mb-0"
                 style="display: flex; justify-content: between">
                 <div>ผู้ดูแลระบบ</div>
                 <div>
-                    <?= number_format($total_admin) ?>
+                    <?= number_format($total_admin) ?> คน
                 </div>
             </div>
             <div class="d-flex justify-content-between align-items-center mb-0"
                 style="display: flex; justify-content: between">
                 <div>ระงับการใช้งาน</div>
                 <div>
-                    <?= number_format($total_suspended) ?>
+                    <?= number_format($total_suspended) ?> คน
                 </div>
             </div>
             <div class="d-flex justify-content-between align-items-center mb-0"
                 style="display: flex; justify-content: between">
                 <div>สมัครเดือนนี้</div>
                 <div>
-                    <?= number_format($total_new_this_month) ?>
+                    <?= number_format($total_new_this_month) ?> คน
                 </div>
             </div>
         </div>
