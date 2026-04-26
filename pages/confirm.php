@@ -198,10 +198,17 @@ if (is_auth()) {
                                                 </div>
                                                 <div class="form-floating mb-3">
                                                     <textarea name="address" id="address" cols="30" rows="3"
-                                                        style="height: 150px;" class="form-control" placeholder="ที่อยู่*"
+                                                        style="height: 150px;" class="form-control mb-3"
+                                                        placeholder="ที่อยู่*"
                                                         required><?php echo $user['address'] ?></textarea>
                                                     <label for="address">ที่อยู่<span class="text-danger">*</span></label>
-
+                                                    <div class="d-flex align-items-center gap-2 px-1"
+                                                        style="font-size:0.83rem; color:#555;">
+                                                        <i class="bi bi-info-circle-fill text-primary mt-1"
+                                                            style="flex-shrink:0;"></i>
+                                                        <span>การแก้ไขที่อยู่ในหน้านี้มีผลเฉพาะคำสั่งซื้อนี้เท่านั้น
+                                                            <strong>ไม่กระทบที่อยู่ที่บันทึกไว้ในโปรไฟล์ของคุณ</strong></span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
