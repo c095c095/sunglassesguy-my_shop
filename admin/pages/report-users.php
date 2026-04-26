@@ -1,6 +1,4 @@
 <?php
-// รายงานสิทธิ์ - User Roles/Permissions Report
-
 // Permission definitions
 $permission_types = [
     ['value' => '0', 'color' => 'secondary', 'label' => 'ระงับการใช้งาน'],
@@ -22,21 +20,28 @@ if (!empty($search)) {
                           email LIKE '%$search%' OR 
                           firstname LIKE '%$search%' OR 
                           lastname LIKE '%$search%' OR 
+                          phone LIKE '%$search%' OR
                           TRIM(CONCAT(firstname, ' ', lastname)) LIKE '%$search%')";
 }
 
 $where_clause = !empty($where_conditions) ? 'WHERE ' . implode(' AND ', $where_conditions) : '';
 
 // Query all users with filter
-$result = query("SELECT * FROM user $where_clause ORDER BY permission DESC, id ASC");
+$result = query("SELECT * FROM user $where_clause ORDER BY id DESC");
 $users = fetch($result);
 $total_filtered = count($users);
 
-// Count by permission (always from full dataset for summary cards)
+// Count summary (always from full dataset for summary cards)
 $total_all = get_count('user');
 $total_suspended = get_count('user', ['permission' => '0']);
 $total_regular = get_count('user', ['permission' => '1']);
 $total_admin = get_count('user', ['permission' => '2']);
+
+// Count by month (สมาชิกใหม่เดือนนี้)
+$current_month = date('Y-m');
+$result_new = query("SELECT COUNT(*) as total FROM user WHERE DATE_FORMAT(created_at, '%Y-%m') = '$current_month'");
+$row_new = fetch($result_new, 2);
+$total_new_this_month = (int) $row_new['total'];
 
 // Pagination
 $current_page = isset($_GET['p']) ? max(1, (int) $_GET['p']) : 1;
@@ -44,45 +49,9 @@ $per_page = 15;
 $total_pages = ceil($total_filtered / $per_page);
 $offset = ($current_page - 1) * $per_page;
 $paged_users = array_slice($users, $offset, $per_page);
-
-// Print date
-$print_date = date('d/m/Y H:i:s');
 ?>
 
 <style>
-    /* ===== Report Header ===== */
-    .report-header {
-        background: linear-gradient(135deg, #4a1a6b 0%, #6f42c1 50%, #8b5cf6 100%);
-        border-radius: 16px;
-        color: white;
-        padding: 1.75rem 2rem;
-        margin-bottom: 1.5rem;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .report-header::after {
-        content: '';
-        position: absolute;
-        top: -30%;
-        right: -5%;
-        width: 200px;
-        height: 200px;
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 50%;
-    }
-
-    .report-header h2 {
-        font-weight: 800;
-        font-size: 1.6rem;
-        margin-bottom: 0.25rem;
-    }
-
-    .report-header .subtitle {
-        opacity: 0.85;
-        font-size: 0.9rem;
-    }
-
     /* ===== Summary Cards ===== */
     .summary-card {
         border: none;
@@ -162,7 +131,7 @@ $print_date = date('d/m/Y H:i:s');
     }
 
     .report-table tbody tr:hover {
-        background-color: #f8f0ff;
+        background-color: #f0f4ff;
     }
 
     .permission-badge {
@@ -170,44 +139,6 @@ $print_date = date('d/m/Y H:i:s');
         padding: 0.35em 0.75em;
         border-radius: 8px;
         font-weight: 600;
-    }
-
-    .user-avatar {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 0.85rem;
-        color: white;
-    }
-
-    /* ===== Action Buttons ===== */
-    .btn-print {
-        background: linear-gradient(135deg, #1a1a2e, #16213e);
-        color: white;
-        border: none;
-        border-radius: 10px;
-        padding: 0.5rem 1.25rem;
-        font-weight: 600;
-        font-size: 0.85rem;
-        transition: all 0.2s ease;
-    }
-
-    .btn-print:hover {
-        background: linear-gradient(135deg, #16213e, #0f3460);
-        color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
-
-    .btn-back {
-        border-radius: 10px;
-        padding: 0.5rem 1.25rem;
-        font-weight: 600;
-        font-size: 0.85rem;
     }
 
     /* ===== Pagination ===== */
@@ -221,13 +152,13 @@ $print_date = date('d/m/Y H:i:s');
     }
 
     .report-pagination .page-item.active .page-link {
-        background-color: #6f42c1;
+        background-color: #0d6efd;
         color: white;
     }
 
     .report-pagination .page-link:hover {
-        background-color: #f0e6ff;
-        color: #6f42c1;
+        background-color: #e8f0fe;
+        color: #0d6efd;
     }
 
     @media print {
@@ -249,7 +180,7 @@ $print_date = date('d/m/Y H:i:s');
     <!-- Report Header -->
     <div class="mb-4">
         <div class="d-flex justify-content-between align-items-center mb-0">
-            <h2>รายงานสิทธิ์</h2>
+            <h2>รายงานสมาชิก</h2>
             <button type="button" class="btn btn-dark" onclick="window.print();">
                 <i class="bi bi-printer me-2"></i>พิมพ์รายงาน
             </button>
@@ -269,27 +200,10 @@ $print_date = date('d/m/Y H:i:s');
                             <div class=" count text-dark">
                                 <?php echo number_format($total_all); ?>
                             </div>
-                            <div class="label">ผู้ใช้ทั้งหมด</div>
+                            <div class="label">สมาชิกทั้งหมด</div>
                         </div>
                         <div class="summary-icon">
                             <i class="bi bi-people-fill"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-lg-3">
-            <div class="card summary-card shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class=" count text-dark">
-                                <?php echo number_format($total_admin); ?>
-                            </div>
-                            <div class="label">ผู้ดูแลระบบ</div>
-                        </div>
-                        <div class="summary-icon">
-                            <i class="bi bi-shield-check"></i>
                         </div>
                     </div>
                 </div>
@@ -318,12 +232,29 @@ $print_date = date('d/m/Y H:i:s');
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <div class=" count text-dark">
-                                <?php echo number_format($total_suspended); ?>
+                                <?php echo number_format($total_admin); ?>
                             </div>
-                            <div class="label">ระงับการใช้งาน</div>
+                            <div class="label">ผู้ดูแลระบบ</div>
                         </div>
                         <div class="summary-icon">
-                            <i class="bi bi-slash-circle"></i>
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card summary-card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class=" count text-dark">
+                                <?php echo number_format($total_new_this_month); ?>
+                            </div>
+                            <div class="label">สมัครเดือนนี้</div>
+                        </div>
+                        <div class="summary-icon">
+                            <i class="bi bi-person-plus-fill"></i>
                         </div>
                     </div>
                 </div>
@@ -335,14 +266,14 @@ $print_date = date('d/m/Y H:i:s');
     <div class="card filter-card shadow-sm mb-4">
         <div class="card-body py-3">
             <form method="GET" action="">
-                <input type="hidden" name="page" value="report-user-roles">
+                <input type="hidden" name="page" value="report-users">
                 <div class="row g-3 align-items-end">
                     <div class="col-md-5">
                         <label class="form-label fw-semibold small text-muted mb-1">
                             ค้นหา
                         </label>
                         <input type="text" class="form-control" name="search"
-                            placeholder="ค้นหาชื่อผู้ใช้, อีเมล, ชื่อ-นามสกุล..."
+                            placeholder="ค้นหาชื่อผู้ใช้, อีเมล, ชื่อ-นามสกุล, เบอร์โทร..."
                             value="<?php echo htmlspecialchars($search); ?>">
                     </div>
                     <div class="col-md-4">
@@ -362,8 +293,7 @@ $print_date = date('d/m/Y H:i:s');
                         <button type="submit" class="btn btn-primary flex-grow-1" style="border-radius: 10px;">
                             ค้นหา
                         </button>
-                        <a href="?page=report-user-roles" class="btn btn-outline-secondary"
-                            style="border-radius: 10px;">
+                        <a href="?page=report-users" class="btn btn-outline-secondary" style="border-radius: 10px;">
                             <i class="bi bi-arrow-counterclockwise"></i>
                         </a>
                     </div>
@@ -376,7 +306,7 @@ $print_date = date('d/m/Y H:i:s');
     <div class="card report-table-card shadow-sm">
         <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
             <h6 class="mb-0 fw-bold">
-                รายละเอียดข้อมูลสิทธิ์ผู้ใช้
+                รายละเอียดข้อมูลสมาชิก
             </h6>
             <span class="badge bg-light text-dark border px-3 py-2" style="font-size: 0.8rem;">
                 ทั้งหมด
@@ -393,6 +323,7 @@ $print_date = date('d/m/Y H:i:s');
                             <th>ชื่อ - นามสกุล</th>
                             <th>อีเมล</th>
                             <th>เบอร์โทรศัพท์</th>
+                            <th>ที่อยู่</th>
                             <th class="text-center">ระดับสิทธิ์</th>
                             <th class="text-center">วันที่สมัคร</th>
                         </tr>
@@ -434,9 +365,14 @@ $print_date = date('d/m/Y H:i:s');
                                             <?php echo htmlspecialchars($user['phone']); ?>
                                         </span>
                                     </td>
+                                    <td>
+                                        <span class="text-muted"
+                                            style="max-width: 200px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                            <?php echo htmlspecialchars($user['address']); ?>
+                                        </span>
+                                    </td>
                                     <td class="text-center">
                                         <span class="permission-badge badge bg-<?php echo $perm_color; ?>">
-                                            <i class="bi <?php echo $perm_icon; ?> me-1"></i>
                                             <?php echo $perm_label; ?>
                                         </span>
                                     </td>
@@ -449,10 +385,10 @@ $print_date = date('d/m/Y H:i:s');
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7" class="text-center py-5">
+                                <td colspan="8" class="text-center py-5">
                                     <div class="text-muted">
                                         <i class="bi bi-inbox" style="font-size: 2.5rem;"></i>
-                                        <p class="mt-2 mb-0 fw-semibold">ไม่พบข้อมูลผู้ใช้</p>
+                                        <p class="mt-2 mb-0 fw-semibold">ไม่พบข้อมูลสมาชิก</p>
                                         <small>ลองเปลี่ยนเงื่อนไขการค้นหา</small>
                                     </div>
                                 </td>
@@ -478,22 +414,21 @@ $print_date = date('d/m/Y H:i:s');
                     <ul class="pagination report-pagination mb-0">
                         <li class="page-item <?php echo ($current_page <= 1) ? 'disabled' : ''; ?>">
                             <a class="page-link"
-                                href="?page=report-user-roles&p=<?php echo $current_page - 1; ?>&search=<?php echo urlencode($search); ?>&permission=<?php echo urlencode($filter_permission); ?>">
+                                href="?page=report-users&p=<?php echo $current_page - 1; ?>&search=<?php echo urlencode($search); ?>&permission=<?php echo urlencode($filter_permission); ?>">
                                 <i class="bi bi-chevron-left"></i>
                             </a>
                         </li>
                         <?php for ($i = 1; $i <= $total_pages; $i++): ?>
                             <li class="page-item <?php echo ($current_page == $i) ? 'active' : ''; ?>">
-                                <a class="page-link" href=" ?page=report-user-roles&p=<?php echo $i; ?>&search=
-                        <?php echo urlencode($search); ?>&permission=
-                        <?php echo urlencode($filter_permission); ?>">
+                                <a class="page-link"
+                                    href="?page=report-users&p=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&permission=<?php echo urlencode($filter_permission); ?>">
                                     <?php echo $i; ?>
                                 </a>
                             </li>
                         <?php endfor; ?>
                         <li class="page-item <?php echo ($current_page >= $total_pages) ? 'disabled' : ''; ?>">
-                            <a class=" page-link"
-                                href="?page=report-user-roles&p=<?php echo $current_page + 1; ?>&search=<?php echo urlencode($search); ?>&permission=<?php echo urlencode($filter_permission); ?>">
+                            <a class="page-link"
+                                href="?page=report-users&p=<?php echo $current_page + 1; ?>&search=<?php echo urlencode($search); ?>&permission=<?php echo urlencode($filter_permission); ?>">
                                 <i class="bi bi-chevron-right"></i>
                             </a>
                         </li>
@@ -502,17 +437,6 @@ $print_date = date('d/m/Y H:i:s');
             </div>
         <?php endif; ?>
     </div>
-
-    <!-- Print Footer Info -->
-    <div class="text-center mt-3 text-muted d-none d-print-block" style="font-size: 0.8rem;">
-        <hr>
-        <p class="mb-1">
-            <strong>
-                <?php echo WEBSITE_NAME; ?></strong> — ระบบรายงานสิทธิ์ผู้ใช้
-        </p>
-        <p class="mb-0">พิมพ์เมื่อ: <?php echo format_datetime_thai(date('Y-m-d H:i:s'), 1); ?>
-        </p>
-    </div>
 </div>
 
 <div class="show-print">
@@ -520,7 +444,7 @@ $print_date = date('d/m/Y H:i:s');
         <div class="mb-4">
             <div class="d-flex justify-content-between align-items-center mb-0"
                 style="display: flex; justify-content: between">
-                <h1 style="font-weight: bold;">รายงานสิทธิ์</h1>
+                <h1 style="font-weight: bold;">รายงานสมาชิก</h1>
                 <h1 style="font-weight: bold;"><?= WEBSITE_NAME ?></h1>
             </div>
             <hr style="margin: 0;">
@@ -530,20 +454,13 @@ $print_date = date('d/m/Y H:i:s');
                 <p>พิมพ์เมื่อ: <?php echo format_datetime_thai(date('Y-m-d H:i:s'), 1); ?></p>
             </div>
         </div>
-        <p style="font-weight: bold; margin: 0;">สิทธิ์ผู้ใช้</p>
+        <p style="font-weight: bold; margin: 0;">ข้อมูลสมาชิก</p>
         <div style="margin-left: 20px;">
             <div class="d-flex justify-content-between align-items-center mb-0"
                 style="display: flex; justify-content: between">
-                <div>ผู้ใช้ทั้งหมด</div>
+                <div>สมาชิกทั้งหมด</div>
                 <div>
                     <?= number_format($total_all) ?>
-                </div>
-            </div>
-            <div class="d-flex justify-content-between align-items-center mb-0"
-                style="display: flex; justify-content: between">
-                <div>ผู้ดูแลระบบ</div>
-                <div>
-                    <?= number_format($total_admin) ?>
                 </div>
             </div>
             <div class="d-flex justify-content-between align-items-center mb-0"
@@ -555,11 +472,54 @@ $print_date = date('d/m/Y H:i:s');
             </div>
             <div class="d-flex justify-content-between align-items-center mb-0"
                 style="display: flex; justify-content: between">
+                <div>ผู้ดูแลระบบ</div>
+                <div>
+                    <?= number_format($total_admin) ?>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-0"
+                style="display: flex; justify-content: between">
                 <div>ระงับการใช้งาน</div>
                 <div>
                     <?= number_format($total_suspended) ?>
                 </div>
             </div>
+            <div class="d-flex justify-content-between align-items-center mb-0"
+                style="display: flex; justify-content: between">
+                <div>สมัครเดือนนี้</div>
+                <div>
+                    <?= number_format($total_new_this_month) ?>
+                </div>
+            </div>
+        </div>
+        <hr class="my-3">
+        <p style="font-weight: bold; margin: 0;">รายละเอียดสมาชิก</p>
+        <div style="margin-left: 20px">
+            <?php
+            $j = 1;
+            foreach ($users as $user):
+                $role = 'ไม่ทราบ';
+                foreach ($permission_types as $pt) {
+                    if ($pt['value'] === $user['permission']) {
+                        $role = $pt['label'];
+                        break;
+                    }
+                }
+                ?>
+                <div style="font-weight: bold;">
+                    <?php echo $j++ . '. ' . $user['firstname'] . ' ' . $user['lastname'] ?>
+                </div>
+                <div style="padding-left: 20px;">
+                    <div>ชื่อผู้ใช้: <?php echo $user['username'] ?></div>
+                    <div>ระดับสิทธิ์:
+                        <?php echo $role ?>
+                    </div>
+                    <div>อีเมล: <?php echo $user['email'] ?></div>
+                    <div>เบอร์โทรศัพท์: <?php echo $user['phone'] ?></div>
+                    <div>ที่อยู่: <?php echo $user['address'] ?></div>
+                    <div>วันที่สมัคร: <?php echo format_date_thai($user['created_at'], 2) ?></div>
+                </div>
+            <?php endforeach; ?>
         </div>
         <hr class="mt-3 mb-0">
         <div class="d-flex justify-content-between align-items-center mb-0"
