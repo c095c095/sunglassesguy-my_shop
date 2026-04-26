@@ -1,6 +1,7 @@
 <?php
 
-function get_color_by_status($status) {
+function get_color_by_status($status)
+{
     switch ($status) {
         case '0':
             return ['secondary', 'ยกเลิก'];
@@ -24,7 +25,8 @@ function get_color_by_status($status) {
     }
 }
 
-function get_percent_color($percent) {
+function get_percent_color($percent)
+{
     if ($percent > 0) {
         return ['success', 'arrow-up'];
     } elseif ($percent < 0) {
@@ -53,7 +55,7 @@ $sql_top_sell = "SELECT p.*, SUM(od.qty) as total_quantity
     GROUP BY p.id
     ORDER BY total_quantity DESC
     LIMIT 25";
-$sql_last_order = "SELECT * FROM `order` ORDER BY id DESC LIMIT 25";
+$sql_last_order = "SELECT * FROM `order` ORDER BY id DESC LIMIT 15";
 $sql_low_stock = "SELECT id, name, img, price, stock, type_id FROM product WHERE stock <= 10 AND stock > 0 ORDER BY stock ASC";
 $sql_out_of_stock = "SELECT COUNT(id) as total FROM product WHERE stock = 0";
 
@@ -169,87 +171,99 @@ $month_user_percent_color = get_percent_color($month_user_percent);
     </div>
     <!-- Alert Section: Low Stock & Out of Stock Products -->
     <?php if (get_num_rows($query_low_stock) > 0 || $out_of_stock['total'] > 0): ?>
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class=card border-0 shadow-sm h-100">
-                <div class="card-header">
-                    <span>สินค้าเหลือน้อยหรือหมด</span>
-                </div>
-                <div class="card-body">
-                    <div class="flex-grow-1">
-                        <div class="row">
-                            <?php if ($out_of_stock['total'] > 0): ?>
-                            <div class="col-md-6 mb-2">
-                                <div class="alert alert-danger py-2 mb-0">
-                                    <strong>สินค้าหมด:</strong> มีสินค้า <?php echo $out_of_stock['total']; ?> รายการที่เหลือ 0 หน่วย
-                                </div>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class=card border-0 shadow-sm h-100">
+                    <div class="card-header">
+                        <span>สินค้าเหลือน้อยหรือหมด</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="flex-grow-1">
+                            <div class="row">
+                                <?php if ($out_of_stock['total'] > 0): ?>
+                                    <div class="col-md-6 mb-2">
+                                        <div class="alert alert-danger py-2 mb-0">
+                                            <strong>สินค้าหมด:</strong> มีสินค้า <?php echo $out_of_stock['total']; ?>
+                                            รายการที่เหลือ 0 หน่วย
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if (get_num_rows($query_low_stock) > 0): ?>
+                                    <div class="col-md-6 mb-2">
+                                        <div class="alert alert-warning py-2 mb-0">
+                                            <strong>สินค้าเหลือน้อย:</strong> มีสินค้า
+                                            <?php echo get_num_rows($query_low_stock); ?> รายการที่เหลือ ≤ 10 หน่วย
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
                             </div>
-                            <?php endif; ?>
+
+                            <!-- Collapsible Table of Low Stock Products -->
                             <?php if (get_num_rows($query_low_stock) > 0): ?>
-                            <div class="col-md-6 mb-2">
-                                <div class="alert alert-warning py-2 mb-0">
-                                    <strong>สินค้าเหลือน้อย:</strong> มีสินค้า <?php echo get_num_rows($query_low_stock); ?> รายการที่เหลือ ≤ 10 หน่วย
+                                <div class="mt-3">
+                                    <button class="btn btn-sm btn-outline-danger" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#lowStockTable" aria-expanded="false" aria-controls="lowStockTable">
+                                        <i class="bi bi-chevron-down"></i> สินค้าเหลือน้อยหรือหมด
+                                    </button>
+                                    <div class="collapse mt-2" id="lowStockTable">
+                                        <div class="table-responsive mt-2">
+                                            <table class="table table-sm table-hover">
+                                                <thead>
+                                                    <tr class="table-danger">
+                                                        <th class="text-center">รูป</th>
+                                                        <th>ชื่อสินค้า</th>
+                                                        <th class="text-center">สต็อก</th>
+                                                        <th class="text-end">ราคา</th>
+                                                        <th class="text-center">จัดการ</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php
+
+                                                    $sql_tmp = "SELECT id, name, img, price, stock, type_id FROM product WHERE stock <= 10 ORDER BY stock ASC";
+                                                    $query_tmp = query($sql_tmp);
+
+                                                    foreach (fetch($query_tmp) as $product):
+                                                        $stock_badge_class = $product['stock'] == 0 ? 'bg-danger' : ($product['stock'] <= 5 ? 'bg-warning text-dark' : 'bg-info');
+                                                        ?>
+                                                        <tr>
+                                                            <td class="align-middle text-center">
+                                                                <img src="../upload/product/<?php echo $product['img'] ?>"
+                                                                    onerror="this.onerror=null; this.src='../assets/images/404.webp';"
+                                                                    alt="<?php echo $product['name'] ?>"
+                                                                    class="object-fit-cover rounded"
+                                                                    style="width: 2.5rem; height: 2.5rem;">
+                                                            </td>
+                                                            <td class="align-middle">
+                                                                <a href="?page=products&search=<?php echo urlencode($product['name']); ?>"
+                                                                    class="link-primary text-decoration-none fw-500"><?php echo $product['name'] ?></a>
+                                                            </td>
+                                                            <td class="align-middle text-center">
+                                                                <span
+                                                                    class="badge <?php echo $stock_badge_class; ?> fs-6"><?php echo $product['stock']; ?>
+                                                                    หน่วย</span>
+                                                            </td>
+                                                            <td class="align-middle text-end fw-bold">
+                                                                ฿<?php echo number_format($product['price'], 2) ?></td>
+                                                            <td class="align-middle text-center">
+                                                                <a href="?page=products&type=<?php echo $product['type_id'] ?>&search=<?php echo urlencode($product['name']); ?>"
+                                                                    class="btn btn-sm btn-outline-primary">
+                                                                    <i class="bi bi-pencil"></i> แก้ไข
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
                             <?php endif; ?>
                         </div>
-                        
-                        <!-- Collapsible Table of Low Stock Products -->
-                        <?php if (get_num_rows($query_low_stock) > 0): ?>
-                        <div class="mt-3">
-                            <button class="btn btn-sm btn-outline-danger" type="button" data-bs-toggle="collapse" data-bs-target="#lowStockTable" aria-expanded="false" aria-controls="lowStockTable">
-                                <i class="bi bi-chevron-down"></i> สินค้าเหลือน้อยหรือหมด
-                            </button>
-                            <div class="collapse mt-2" id="lowStockTable">
-                                <div class="table-responsive mt-2">
-                                    <table class="table table-sm table-hover">
-                                        <thead>
-                                            <tr class="table-danger">
-                                                <th class="text-center">รูป</th>
-                                                <th>ชื่อสินค้า</th>
-                                                <th class="text-center">สต็อก</th>
-                                                <th class="text-end">ราคา</th>
-                                                <th class="text-center">จัดการ</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-
-                                            $sql_tmp = "SELECT id, name, img, price, stock, type_id FROM product WHERE stock <= 10 ORDER BY stock ASC";
-                                            $query_tmp = query($sql_tmp);
-
-                                            foreach (fetch($query_tmp) as $product): 
-                                                $stock_badge_class = $product['stock'] == 0 ? 'bg-danger' : ($product['stock'] <= 5 ? 'bg-warning text-dark' : 'bg-info');
-                                            ?>
-                                            <tr>
-                                                <td class="align-middle text-center">
-                                                    <img src="../upload/product/<?php echo $product['img'] ?>" onerror="this.onerror=null; this.src='../assets/images/404.webp';" alt="<?php echo $product['name'] ?>" class="object-fit-cover rounded" style="width: 2.5rem; height: 2.5rem;">
-                                                </td>
-                                                <td class="align-middle">
-                                                    <a href="?page=products&search=<?php echo urlencode($product['name']); ?>" class="link-primary text-decoration-none fw-500"><?php echo $product['name'] ?></a>
-                                                </td>
-                                                <td class="align-middle text-center">
-                                                    <span class="badge <?php echo $stock_badge_class; ?> fs-6"><?php echo $product['stock']; ?> หน่วย</span>
-                                                </td>
-                                                <td class="align-middle text-end fw-bold">฿<?php echo number_format($product['price'], 2) ?></td>
-                                                <td class="align-middle text-center">
-                                                    <a href="?page=products&type=<?php echo $product['type_id'] ?>&search=<?php echo urlencode($product['name']); ?>" class="btn btn-sm btn-outline-primary">
-                                                        <i class="bi bi-pencil"></i> แก้ไข
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
     <?php endif; ?>
     <div class="row">
         <div class="col-8">
@@ -279,19 +293,26 @@ $month_user_percent_color = get_percent_color($month_user_percent);
                                         ?>
                                         <tr>
                                             <td class="align-middle">
-                                                <img src="../upload/product/<?php echo $product['img'] ?>" onerror="this.onerror=null; this.src='../assets/images/404.webp';" alt="<?php echo $product['name'] ?>" class="object-fit-cover rounded" style="width: 3rem; height: 3rem;">
-                                                <a href="./../?page=product&id=<?php echo $product['id'] ?>" target="_blank" class="link-primary text-decoration-none"><?php echo $product['name'] ?></a>
+                                                <img src="../upload/product/<?php echo $product['img'] ?>"
+                                                    onerror="this.onerror=null; this.src='../assets/images/404.webp';"
+                                                    alt="<?php echo $product['name'] ?>" class="object-fit-cover rounded"
+                                                    style="width: 3rem; height: 3rem;">
+                                                <a href="./../?page=product&id=<?php echo $product['id'] ?>" target="_blank"
+                                                    class="link-primary text-decoration-none"><?php echo $product['name'] ?></a>
                                             </td>
-                                            <td class="align-middle text-end">฿<?php echo number_format($product['price'], 2) ?></td>
+                                            <td class="align-middle text-end">฿<?php echo number_format($product['price'], 2) ?>
+                                            </td>
                                             <td class="align-middle text-center">
-                                                <a href="?page=products&type=<?php echo $product['type_id'] ?>" class="link-primary text-decoration-none"><?php echo $type['name'] ?></a>
+                                                <a href="?page=products&type=<?php echo $product['type_id'] ?>"
+                                                    class="link-primary text-decoration-none"><?php echo $type['name'] ?></a>
                                             </td>
                                             <td class="align-middle dropdown">
                                                 <button type="button" class="btn w-100 border-0" data-bs-toggle="dropdown">
                                                     <i class="bi bi-three-dots"></i>
                                                 </button>
                                                 <ul class="dropdown-menu">
-                                                    <li><a href="?page=products&search=<?php echo $product['name'] ?>&type=<?php echo $product['type_id'] ?>" class="dropdown-item">รายละเอียด</a></li>
+                                                    <li><a href="?page=products&search=<?php echo $product['name'] ?>&type=<?php echo $product['type_id'] ?>"
+                                                            class="dropdown-item">รายละเอียด</a></li>
                                                 </ul>
                                             </td>
                                         </tr>
@@ -314,9 +335,9 @@ $month_user_percent_color = get_percent_color($month_user_percent);
             </div>
         </div>
         <div class="col-4">
-        <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-header">
-                    <span>คำสั่งซื้อล่าสุด</span>
+                    <span>15 คำสั่งซื้อล่าสุด</span>
                 </div>
                 <div class="card-body p-0 overflow-y-auto" style="max-height: 30rem;">
                     <?php
@@ -341,14 +362,18 @@ $month_user_percent_color = get_percent_color($month_user_percent);
                                         <tr>
                                             <a href="?page=order&id=<?php echo $order['id'] ?>"></a>
                                             <td class="align-middle text-center">
-                                                <span class="badge text-bg-<?php echo $color[0]; ?>"><?php echo $color[1] ?></span>
+                                                <span
+                                                    class="badge text-bg-<?php echo $color[0]; ?>"><?php echo $color[1] ?></span>
                                             </td>
                                             <td class="align-middle text-center small">
-                                                <a href="?page=order&id=<?php echo $order['id'] ?>" class="link-primary text-decoration-none">
+                                                <a href="?page=order&id=<?php echo $order['id'] ?>"
+                                                    class="link-primary text-decoration-none">
                                                     <?php echo format_datetime_thai($order['order_date']) ?>
                                                 </a>
                                             </td>
-                                            <td class="align-middle text-end">฿<?php echo number_format($order['total_price'] + $order['delivery_fee'], 2) ?></td>
+                                            <td class="align-middle text-end">
+                                                ฿<?php echo number_format($order['total_price'] + $order['delivery_fee'], 2) ?>
+                                            </td>
                                         </tr>
                                         <?php
                                     }
