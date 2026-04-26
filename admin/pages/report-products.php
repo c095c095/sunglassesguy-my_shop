@@ -318,8 +318,8 @@ $paged_products = array_slice($products, $offset, $per_page);
                             <th class="text-center" style="width: 80px;">รูปภาพ</th>
                             <th>ชื่อสินค้า</th>
                             <th>ประเภท</th>
-                            <th class="text-end">ราคา</th>
-                            <th class="text-center">คงเหลือ</th>
+                            <th class="text-end">ราคา (บาท)</th>
+                            <th class="text-center">สต็อก (ชิ้น)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -476,7 +476,7 @@ $paged_products = array_slice($products, $offset, $per_page);
                     <th style="text-wrap: nowrap;">ชื่อสินค้า</th>
                     <th style="text-wrap: nowrap;">ประเภท</th>
                     <th class="text-end" style="text-wrap: nowrap;">ราคา (บาท)</th>
-                    <th class="text-center" style="text-wrap: nowrap;">คงเหลือ (ชิ้น)</th>
+                    <th class="text-center" style="text-wrap: nowrap;">สต็อก (ชิ้น)</th>
                 </tr>
             </thead>
             <tbody>
