@@ -1,4 +1,32 @@
 <?php
+include_once "../core/helpers/image_upload.php";
+
+// Handle edit product form submitted from home page modal
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'edit_from_home') {
+    $id = $_POST['id'];
+    $productData = [
+        'name' => $_POST['product_name'],
+        'detail' => $_POST['product_description'],
+        'price' => $_POST['product_price'],
+        'stock' => $_POST['product_quantity'],
+        'type_id' => $_POST['product_type'],
+    ];
+    if (!empty($_FILES['product_image']['name'])) {
+        $image = $_FILES['product_image'];
+        if (is_image($image)) {
+            $image_name = generate_image_name($image);
+            if (upload_image($image, $image_name, 'product/')) {
+                $productData['img'] = $image_name;
+            }
+        }
+    }
+    if (update_by_id('product', $id, $productData)) {
+        show_alert('แก้ไขสินค้าสำเร็จ');
+    } else {
+        show_alert('แก้ไขสินค้าไม่สำเร็จ');
+    }
+    reload_page();
+}
 
 function get_color_by_status($status)
 {
@@ -56,7 +84,8 @@ $sql_top_sell = "SELECT p.*, SUM(od.qty) as total_quantity
     ORDER BY total_quantity DESC
     LIMIT 25";
 $sql_last_order = "SELECT * FROM `order` ORDER BY id DESC LIMIT 15";
-$sql_low_stock = "SELECT id, name, img, price, stock, type_id FROM product WHERE stock <= 10 AND stock > 0 ORDER BY stock ASC";
+// รวม out-of-stock ไว้ใน query เดียว เพื่อใช้ทั้งสรุปและตาราง
+$sql_low_stock = "SELECT id, name, img, price, stock, type_id FROM product WHERE stock <= 10 ORDER BY stock ASC";
 $sql_out_of_stock = "SELECT COUNT(id) as total FROM product WHERE stock = 0";
 
 $query_week_sale = query($sql_week_sale);
@@ -170,97 +199,129 @@ $month_user_percent_color = get_percent_color($month_user_percent);
         </div>
     </div>
     <!-- Alert Section: Low Stock & Out of Stock Products -->
-    <?php if (get_num_rows($query_low_stock) > 0 || $out_of_stock['total'] > 0): ?>
+    <?php
+    $low_stock_products = fetch($query_low_stock); // fetch once, reuse below
+    $total_low_stock = count($low_stock_products);
+    $total_out_of_stock = (int) $out_of_stock['total'];
+    $critical_count = 0; // stock 1-5
+    $low_count = 0; // stock 6-10
+    foreach ($low_stock_products as $p) {
+        if ($p['stock'] == 0) { /* counted separately */
+        } elseif ($p['stock'] <= 5)
+            $critical_count++;
+        else
+            $low_count++;
+    }
+    $has_alert = $total_low_stock > 0 || $total_out_of_stock > 0;
+    // Auto-expand the table when there are out-of-stock or critical items
+    $auto_expand = ($total_out_of_stock > 0 || $critical_count > 0) ? 'show' : '';
+    ?>
+    <?php if ($has_alert): ?>
         <div class="row mb-4">
             <div class="col-12">
-                <div class=card border-0 shadow-sm h-100">
-                    <div class="card-header">
-                        <span>สินค้าเหลือน้อยหรือหมด</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="flex-grow-1">
-                            <div class="row">
-                                <?php if ($out_of_stock['total'] > 0): ?>
-                                    <div class="col-md-6 mb-2">
-                                        <div class="alert alert-danger py-2 mb-0">
-                                            <strong>สินค้าหมด:</strong> มีสินค้า <?php echo $out_of_stock['total']; ?>
-                                            รายการที่เหลือ 0 หน่วย
-                                        </div>
-                                    </div>
-                                <?php endif; ?>
-                                <?php if (get_num_rows($query_low_stock) > 0): ?>
-                                    <div class="col-md-6 mb-2">
-                                        <div class="alert alert-warning py-2 mb-0">
-                                            <strong>สินค้าเหลือน้อย:</strong> มีสินค้า
-                                            <?php echo get_num_rows($query_low_stock); ?> รายการที่เหลือ ≤ 10 หน่วย
-                                        </div>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-
-                            <!-- Collapsible Table of Low Stock Products -->
-                            <?php if (get_num_rows($query_low_stock) > 0): ?>
-                                <div class="mt-3">
-                                    <button class="btn btn-sm btn-outline-danger" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#lowStockTable" aria-expanded="false" aria-controls="lowStockTable">
-                                        <i class="bi bi-chevron-down"></i> สินค้าเหลือน้อยหรือหมด
-                                    </button>
-                                    <div class="collapse mt-2" id="lowStockTable">
-                                        <div class="table-responsive mt-2">
-                                            <table class="table table-sm table-hover">
-                                                <thead>
-                                                    <tr class="table-danger">
-                                                        <th class="text-center">รูป</th>
-                                                        <th>ชื่อสินค้า</th>
-                                                        <th class="text-center">สต็อก</th>
-                                                        <th class="text-end">ราคา</th>
-                                                        <th class="text-center">จัดการ</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php
-
-                                                    $sql_tmp = "SELECT id, name, img, price, stock, type_id FROM product WHERE stock <= 10 ORDER BY stock ASC";
-                                                    $query_tmp = query($sql_tmp);
-
-                                                    foreach (fetch($query_tmp) as $product):
-                                                        $stock_badge_class = $product['stock'] == 0 ? 'bg-danger' : ($product['stock'] <= 5 ? 'bg-warning text-dark' : 'bg-info');
-                                                        ?>
-                                                        <tr>
-                                                            <td class="align-middle text-center">
-                                                                <img src="../upload/product/<?php echo $product['img'] ?>"
-                                                                    onerror="this.onerror=null; this.src='../assets/images/404.webp';"
-                                                                    alt="<?php echo $product['name'] ?>"
-                                                                    class="object-fit-cover rounded"
-                                                                    style="width: 2.5rem; height: 2.5rem;">
-                                                            </td>
-                                                            <td class="align-middle">
-                                                                <a href="?page=products&search=<?php echo urlencode($product['name']); ?>"
-                                                                    class="link-primary text-decoration-none fw-500"><?php echo $product['name'] ?></a>
-                                                            </td>
-                                                            <td class="align-middle text-center">
-                                                                <span
-                                                                    class="badge <?php echo $stock_badge_class; ?> fs-6"><?php echo $product['stock']; ?>
-                                                                    หน่วย</span>
-                                                            </td>
-                                                            <td class="align-middle text-end fw-bold">
-                                                                ฿<?php echo number_format($product['price'], 2) ?></td>
-                                                            <td class="align-middle text-center">
-                                                                <a href="?page=products&type=<?php echo $product['type_id'] ?>&search=<?php echo urlencode($product['name']); ?>"
-                                                                    class="btn btn-sm btn-outline-primary">
-                                                                    <i class="bi bi-pencil"></i> แก้ไข
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                    <?php endforeach; ?>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
+                <div class="card border-0 shadow-sm">
+                    <!-- Card Header -->
+                    <div class="card-header d-flex align-items-center justify-content-between py-3 px-4">
+                        <div class="d-flex align-items-center gap-2">แจ้งเตือนสต็อกสินค้า</div>
+                        <div class="d-flex align-items-center gap-2">
+                            <!-- Summary pills in header -->
+                            <?php if ($total_out_of_stock > 0): ?>
+                                <span class="badge rounded-pill text-bg-danger px-3 py-2">
+                                    <i class="bi bi-x-circle-fill me-1"></i>สินค้าหมด <?php echo $total_out_of_stock; ?>
+                                </span>
                             <?php endif; ?>
+                            <?php if ($critical_count > 0): ?>
+                                <span class="badge rounded-pill text-bg-warning px-3 py-2">
+                                    <i class="bi bi-exclamation-circle-fill me-1"></i>ใกล้หมด <?php echo $critical_count; ?>
+                                </span>
+                            <?php endif; ?>
+                            <?php if ($low_count > 0): ?>
+                                <span class="badge rounded-pill text-bg-info px-3 py-2">
+                                    <i class="bi bi-info-circle-fill me-1"></i>เหลือน้อย <?php echo $low_count; ?>
+                                </span>
+                            <?php endif; ?>
+                            <a href="?page=products" class="btn btn-sm btn-outline-secondary ms-2">
+                                จัดการสินค้า
+                            </a>
                         </div>
                     </div>
+
+                    <!-- Product Card Grid -->
+                    <?php if ($total_low_stock > 0): ?>
+                        <div class="card-body p-3">
+                            <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3">
+                                <?php foreach ($low_stock_products as $product):
+                                    if ($product['stock'] == 0) {
+                                        $border_color = '#dc3545'; // danger
+                                        $bar_color = 'bg-danger';
+                                        $level_label = 'สินค้าหมด';
+                                        $level_badge = 'text-bg-danger';
+                                        $stock_pct = 0;
+                                    } elseif ($product['stock'] <= 5) {
+                                        $border_color = '#ffc107'; // warning
+                                        $bar_color = 'bg-warning';
+                                        $level_label = 'ใกล้หมด';
+                                        $level_badge = 'text-bg-warning text-dark';
+                                        $stock_pct = ($product['stock'] / 10) * 100;
+                                    } else {
+                                        $border_color = '#0dcaf0'; // info
+                                        $bar_color = 'bg-info';
+                                        $level_label = 'เหลือน้อย';
+                                        $level_badge = 'text-bg-info';
+                                        $stock_pct = ($product['stock'] / 10) * 100;
+                                    }
+                                    ?>
+                                    <div class="col">
+                                        <div class="card h-100 border-0 shadow-sm position-relative overflow-hidden"
+                                            style="border-left: 4px solid <?php echo $border_color; ?> !important;">
+                                            <div class="card-body p-3 d-flex gap-3 align-items-start">
+                                                <!-- Product Image -->
+                                                <img src="../upload/product/<?php echo $product['img']; ?>"
+                                                    onerror="this.onerror=null; this.src='../assets/images/404.webp';"
+                                                    alt="<?php echo htmlspecialchars($product['name']); ?>"
+                                                    class="object-fit-cover rounded flex-shrink-0" style="width:3rem; height:3rem;">
+                                                <!-- Info -->
+                                                <div class="flex-grow-1 overflow-hidden">
+                                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                                        <span class="fw-semibold text-truncate small" style="max-width:9rem;"
+                                                            title="<?php echo htmlspecialchars($product['name']); ?>">
+                                                            <?php echo htmlspecialchars($product['name']); ?>
+                                                        </span>
+                                                        <span class="badge <?php echo $level_badge; ?> ms-1 flex-shrink-0">
+                                                            <?php echo $level_label; ?>
+                                                        </span>
+                                                    </div>
+                                                    <!-- Stock count -->
+                                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                                        <span class="fs-5 fw-bold lh-1" style="color:<?php echo $border_color; ?>">
+                                                            <?php echo $product['stock']; ?>
+                                                        </span>
+                                                        <span class="text-muted small">หน่วย</span>
+                                                    </div>
+                                                    <!-- Mini stock bar -->
+                                                    <div class="progress mb-2" style="height:5px;"
+                                                        title="สต็อกเหลือ <?php echo $product['stock']; ?>/10">
+                                                        <div class="progress-bar <?php echo $bar_color; ?>" role="progressbar"
+                                                            style="width:<?php echo $stock_pct; ?>%"></div>
+                                                    </div>
+                                                    <!-- Price + Edit -->
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span
+                                                            class="small text-muted">฿<?php echo number_format($product['price'], 2); ?></span>
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-outline-primary py-0 px-2 small mt-3"
+                                                            onclick="editProductFromHome(<?php echo (int) $product['id']; ?>)">
+                                                            <i class="bi bi-pencil-fill"></i> แก้ไข
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -395,3 +456,116 @@ $month_user_percent_color = get_percent_color($month_user_percent);
         </div>
     </div>
 </div>
+
+<!-- Edit Product Modal (Home Page) -->
+<?php $home_product_types = fetch(get_all('product_type')); ?>
+<div class="modal fade" id="homeEditProductModal" tabindex="-1" aria-labelledby="homeEditProductModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="homeEditProductModalLabel">แก้ไขสินค้า</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="homeEditProductForm" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="edit_from_home">
+                    <input type="hidden" name="id" id="home_edit_id">
+                    <div class="mb-3">
+                        <label for="home_edit_product_name" class="form-label">ชื่อสินค้า</label>
+                        <input type="text" class="form-control" id="home_edit_product_name" name="product_name"
+                            maxlength="255" placeholder="กรุณากรอกชื่อสินค้า" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="home_edit_product_type" class="form-label">ประเภทสินค้า</label>
+                        <select class="form-select" id="home_edit_product_type" name="product_type" required>
+                            <option value="" disabled>กรุณาเลือกประเภทสินค้า</option>
+                            <?php foreach ($home_product_types as $pt): ?>
+                                <option value="<?php echo $pt['id']; ?>"><?php echo htmlspecialchars($pt['name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="home_edit_product_description" class="form-label">รายละเอียดสินค้า</label>
+                        <textarea class="form-control" id="home_edit_product_description" name="product_description"
+                            rows="4" placeholder="กรุณากรอกรายละเอียดสินค้า"></textarea>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="home_edit_product_price" class="form-label">ราคา (บาท)</label>
+                            <input type="number" class="form-control" id="home_edit_product_price" name="product_price"
+                                min="0" step="0.01" placeholder="ราคาสินค้า" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="home_edit_product_quantity" class="form-label">จำนวน</label>
+                            <input type="number" class="form-control" id="home_edit_product_quantity"
+                                name="product_quantity" min="0" placeholder="จำนวนสต็อก" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">รูปภาพสินค้า <small class="text-muted">(ไม่บังคับ
+                                หากไม่เปลี่ยนให้เว้นว่าง)</small></label>
+                        <div class="d-flex align-items-center gap-3 mb-2">
+                            <img id="home_edit_product_preview" src="" alt="preview"
+                                class="object-fit-cover rounded border flex-shrink-0"
+                                style="width:5rem; height:5rem; display:none;">
+                            <input type="file" class="form-control" id="home_edit_product_image" name="product_image"
+                                accept="image/*">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                <button type="submit" form="homeEditProductForm" class="btn btn-primary">
+                    <i class="bi bi-floppy me-1"></i>บันทึก
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        window.editProductFromHome = function (id) {
+            fetch('../core/helpers/get_data.php?type=product&id=' + id)
+                .then(function (r) { return r.json(); })
+                .then(function (p) {
+                    document.getElementById('home_edit_id').value = p.id;
+                    document.getElementById('home_edit_product_name').value = p.name;
+                    document.getElementById('home_edit_product_description').value = p.detail || '';
+                    document.getElementById('home_edit_product_price').value = p.price;
+                    document.getElementById('home_edit_product_quantity').value = p.stock;
+                    document.getElementById('home_edit_product_type').value = p.type_id;
+                    var preview = document.getElementById('home_edit_product_preview');
+                    if (p.img) {
+                        preview.src = '../upload/product/' + p.img;
+                        preview.onerror = function () { this.style.display = 'none'; };
+                        preview.style.display = 'block';
+                    } else {
+                        preview.style.display = 'none';
+                    }
+                    new bootstrap.Modal(document.getElementById('homeEditProductModal')).show();
+                })
+                .catch(function () { alert('ไม่สามารถดึงข้อมูลสินค้าได้'); });
+        };
+
+        // Reset image preview when modal closes
+        document.getElementById('homeEditProductModal').addEventListener('hidden.bs.modal', function () {
+            var preview = document.getElementById('home_edit_product_preview');
+            preview.src = '';
+            preview.style.display = 'none';
+            document.getElementById('home_edit_product_image').value = '';
+        });
+
+        // Live image preview
+        document.getElementById('home_edit_product_image').addEventListener('change', function () {
+            var file = this.files[0];
+            if (!file) return;
+            var preview = document.getElementById('home_edit_product_preview');
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = 'block';
+        });
+    })();
+</script>
