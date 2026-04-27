@@ -10,6 +10,46 @@ if (!isset($_SESSION['permission']) || $_SESSION['permission'] != 2) {
     exit;
 }
 
+function get_bank($id)
+{
+    switch ($id) {
+        case '1':
+            return ['กสิกรไทย', 'k-bank.png'];
+            break;
+        case '2':
+            return ['ไทยพาณิชย์', 'scb.png'];
+            break;
+        case '3':
+            return ['กรุงไทย888', 'ktb.png'];
+            break;
+        case '4':
+            return ['กรุงเทพ', 'bbl.png'];
+            break;
+        case '5':
+            return ['กรุงศรีอยุธยา', 'bay.png'];
+            break;
+        case '6':
+            return ['ทหารไทยธนชาต', 'ttb.png'];
+            break;
+        case '7':
+            return ['ซีไอเอ็มบี', 'cimb.png'];
+            break;
+        case '8':
+            return ['ยูโอบี', 'uob.png'];
+            break;
+        case '9':
+            return ['พร้อมเพย์', 'promptpay.png'];
+            break;
+        case '10':
+            return ['อื่น ๆ', 'other.png'];
+            break;
+
+        default:
+            return ['ไม่ทราบ', 'unknown.png'];
+            break;
+    }
+}
+
 // Get the type of data to fetch
 $type = $_GET['type'] ?? '';
 $id = $_GET['id'] ?? null;
@@ -82,13 +122,12 @@ switch ($type) {
         $payment = null;
         if (get_num_rows($payment_result) > 0) {
             $payment_data = fetch($payment_result, 2);
-            
-            // Get bank information
-            $bank_result = get_by_id('bank', $payment_data['bank_id']);
-            $bank = fetch($bank_result, 2);
+            $bank_data = get_bank($payment_data['bank_id']);
             
             $payment = array_merge($payment_data, [
-                'bank_name' => $bank['name']
+                'bank_name' => $bank_data[0],
+                'bank_logo' => $bank_data[1],
+
             ]);
         }
 
