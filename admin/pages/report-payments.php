@@ -1,5 +1,45 @@
 <?php
 // รายงานการแจ้งชำระเงิน - Payment Notification Report
+function get_bank($id)
+{
+    switch ($id) {
+        case '1':
+            return ['กสิกรไทย', 'k-bank.png'];
+            break;
+        case '2':
+            return ['ไทยพาณิชย์', 'scb.png'];
+            break;
+        case '3':
+            return ['กรุงไทย', 'ktb.png'];
+            break;
+        case '4':
+            return ['กรุงเทพ', 'bbl.png'];
+            break;
+        case '5':
+            return ['กรุงศรีอยุธยา', 'bay.png'];
+            break;
+        case '6':
+            return ['ทหารไทยธนชาต', 'ttb.png'];
+            break;
+        case '7':
+            return ['ซีไอเอ็มบี', 'cimb.png'];
+            break;
+        case '8':
+            return ['ยูโอบี', 'uob.png'];
+            break;
+        case '9':
+            return ['พร้อมเพย์', 'promptpay.png'];
+            break;
+        case '10':
+            return ['อื่น ๆ', 'other.png'];
+            break;
+
+        default:
+            return ['ไม่ทราบ', 'unknown.png'];
+            break;
+    }
+}
+
 
 // Filters
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
@@ -301,7 +341,7 @@ function pay_order_status_badge($status)
                             <option value="">ทุกธนาคาร</option>
                             <?php foreach ($all_banks as $bank): ?>
                                 <option value="<?php echo $bank['id']; ?>" <?php echo $filter_bank === (string) $bank['id'] ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($bank['name']); ?>
+                                    <?php echo get_bank($bank['id'])[0]; ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -372,7 +412,7 @@ function pay_order_status_badge($status)
                                     </td>
                                     <td>
                                         <span
-                                            class="fw-semibold"><?php echo htmlspecialchars($pay['bank_name'] ?? '-'); ?></span>
+                                            class="fw-semibold"><?php echo get_bank($pay['bank_id'])[0]; ?></span>
                                     </td>
                                     <td>
                                         <small class="text-muted">
@@ -511,7 +551,7 @@ function pay_order_status_badge($status)
                         <td class="text-center"><?php echo $j++; ?></td>
                         <td>#ORDER-<?php echo $pay['order_id']; ?></td>
                         <td><?php echo htmlspecialchars($pay['firstname'] . ' ' . $pay['lastname']); ?></td>
-                        <td><?php echo htmlspecialchars($pay['bank_name'] ?? '-'); ?></td>
+                        <td><?php echo get_bank($pay['bank_id'])[0] ?? '-'; ?></td>
                         <td><?php echo date('d/m/Y', strtotime($pay['pay_date'])); ?>     <?php echo $pay['pay_time']; ?></td>
                         <td class="text-end"><?php echo number_format($pay['total_price'] + $pay['delivery_fee'], 2); ?>
                         </td>
