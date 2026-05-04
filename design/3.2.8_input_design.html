@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <title>3.2.8 การออกแบบส่วนนำเข้าของข้อมูล (Input Design)</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Sarabun", sans-serif;
+        background: #f5f5f5;
+        color: #222;
+        font-size: 14px;
+      }
+      @import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap");
+
+      .page {
+        max-width: 900px;
+        margin: 30px auto;
+        padding: 20px;
+      }
+      h1 {
+        font-size: 22px;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 6px;
+      }
+      .subtitle {
+        text-align: center;
+        color: #555;
+        margin-bottom: 30px;
+        font-size: 13px;
+      }
+
+      .section {
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        margin-bottom: 30px;
+        padding: 20px;
+      }
+      .section-title {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 4px;
+        border-bottom: 2px solid #4caf50;
+        padding-bottom: 6px;
+        color: #2e7d32;
+      }
+      .section-desc {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 16px;
+      }
+
+      /* wireframe form styles */
+      .wf-form {
+        border: 1.5px solid #aaa;
+        border-radius: 6px;
+        padding: 20px;
+        background: #fafafa;
+        max-width: 420px;
+      }
+      .wf-title {
+        font-size: 16px;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 18px;
+      }
+      .wf-field {
+        margin-bottom: 12px;
+      }
+      .wf-label {
+        font-size: 12px;
+        color: #444;
+        margin-bottom: 3px;
+      }
+      .wf-input {
+        width: 100%;
+        border: 1px solid #999;
+        border-radius: 4px;
+        padding: 7px 10px;
+        font-size: 13px;
+        background: #fff;
+        color: #888;
+      }
+      textarea.wf-input {
+        height: 70px;
+        resize: none;
+      }
+      .wf-btn {
+        display: block;
+        width: 100%;
+        padding: 8px;
+        text-align: center;
+        background: #c8e6c9;
+        border: 1px solid #aaa;
+        border-radius: 4px;
+        font-size: 13px;
+        font-weight: 600;
+        margin-top: 14px;
+        cursor: default;
+      }
+      .wf-btn.secondary {
+        background: #fff;
+      }
+      .wf-link {
+        text-align: center;
+        font-size: 12px;
+        color: #555;
+        margin-top: 8px;
+      }
+
+      /* admin form */
+      .wf-admin {
+        border: 1.5px solid #aaa;
+        border-radius: 6px;
+        padding: 20px;
+        background: #fafafa;
+        max-width: 560px;
+      }
+      .wf-row {
+        display: flex;
+        gap: 12px;
+      }
+      .wf-row .wf-field {
+        flex: 1;
+      }
+      .wf-select {
+        width: 100%;
+        border: 1px solid #999;
+        border-radius: 4px;
+        padding: 7px 10px;
+        font-size: 13px;
+        background: #fff;
+        color: #888;
+      }
+      .wf-file {
+        width: 100%;
+        border: 1px dashed #999;
+        border-radius: 4px;
+        padding: 7px 10px;
+        font-size: 13px;
+        background: #fff;
+        color: #888;
+      }
+      .wf-radio-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 4px;
+      }
+      .wf-radio {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: #555;
+      }
+      .wf-radio input {
+        width: 15px;
+        height: 15px;
+      }
+
+      /* search bar */
+      .wf-search {
+        width: 100%;
+        border: 1px solid #999;
+        border-radius: 20px;
+        padding: 7px 14px;
+        font-size: 13px;
+        background: #fff;
+        color: #888;
+        margin-bottom: 12px;
+      }
+
+      /* table mockup */
+      .wf-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        margin-top: 10px;
+      }
+      .wf-table th {
+        background: #e8f5e9;
+        border: 1px solid #ccc;
+        padding: 6px 10px;
+        text-align: left;
+      }
+      .wf-table td {
+        border: 1px solid #ddd;
+        padding: 6px 10px;
+        color: #555;
+      }
+      .wf-table td.muted {
+        color: #bbb;
+        font-style: italic;
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 11px;
+      }
+      .badge-success {
+        background: #c8e6c9;
+        color: #2e7d32;
+      }
+      .badge-warning {
+        background: #fff9c4;
+        color: #f57f17;
+      }
+      .badge-danger {
+        background: #ffcdd2;
+        color: #c62828;
+      }
+
+      .wf-header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .wf-add-btn {
+        background: #c8e6c9;
+        border: 1px solid #aaa;
+        border-radius: 4px;
+        padding: 5px 14px;
+        font-size: 13px;
+        cursor: default;
+      }
+
+      .note {
+        font-size: 11px;
+        color: #888;
+        margin-top: 6px;
+      }
+      .two-col {
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+      }
+      .two-col .wf-form {
+        flex: 1;
+        min-width: 280px;
+      }
+
+      .field-info {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .field-tag {
+        background: #e8f5e9;
+        border: 1px solid #a5d6a7;
+        border-radius: 4px;
+        padding: 4px 10px;
+        font-size: 11px;
+      }
+      .field-tag span {
+        font-weight: 700;
+        color: #2e7d32;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <h1>3.2.8 การออกแบบส่วนนำเข้าของข้อมูล (Input Design)</h1>
+      <p class="subtitle">ระบบขายอุปกรณ์ตกปลาร้าน ก.กีฬา ออนไลน์</p>
+
+      <!-- =============== 1. LOGIN =============== -->
+      <div class="section">
+        <div class="section-title">INPUT-01 : หน้าเข้าสู่ระบบ (Login)</div>
+        <div class="section-desc">
+          ผู้ใช้กรอกชื่อผู้ใช้และรหัสผ่านเพื่อเข้าสู่ระบบ
+        </div>
+        <div class="wf-form">
+          <div class="wf-title">เข้าสู่ระบบ</div>
+          <div class="wf-field">
+            <div class="wf-label">
+              ชื่อผู้ใช้ <span style="color: red">*</span>
+            </div>
+            <input class="wf-input" placeholder="ชื่อผู้ใช้" readonly />
+          </div>
+          <div class="wf-field">
+            <div class="wf-label">
+              รหัสผ่าน <span style="color: red">*</span>
+            </div>
+            <input class="wf-input" placeholder="รหัสผ่าน" readonly />
+            <div
+              style="
+                text-align: right;
+                font-size: 11px;
+                margin-top: 4px;
+                color: #1565c0;
+              "
+            >
+              ลืมรหัสผ่าน?
+            </div>
+          </div>
+          <div class="wf-btn">เข้าสู่ระบบ</div>
+          <div class="wf-btn secondary" style="margin-top: 8px">สร้างบัญชี</div>
+        </div>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>ฟิลด์:</span> ชื่อผู้ใช้ (text), รหัสผ่าน (password)
+          </div>
+          <div class="field-tag">
+            <span>การตรวจสอบ:</span> ต้องไม่ว่างเปล่า, ตรวจสอบจากฐานข้อมูล
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 2. REGISTER =============== -->
+      <div class="section">
+        <div class="section-title">INPUT-02 : หน้าสมัครสมาชิก (Register)</div>
+        <div class="section-desc">
+          ผู้ใช้ใหม่กรอกข้อมูลส่วนตัวเพื่อสร้างบัญชีผู้ใช้
+        </div>
+        <div class="wf-form">
+          <div class="wf-title">สมัครสมาชิก</div>
+          <div class="wf-row">
+            <div class="wf-field">
+              <div class="wf-label">
+                ชื่อจริง <span style="color: red">*</span>
+              </div>
+              <input class="wf-input" placeholder="ชื่อจริง" readonly />
+            </div>
+            <div class="wf-field">
+              <div class="wf-label">
+                นามสกุล <span style="color: red">*</span>
+              </div>
+              <input class="wf-input" placeholder="นามสกุล" readonly />
+            </div>
+          </div>
+          <div class="wf-field">
+            <div class="wf-label">
+              ชื่อผู้ใช้ <span style="color: red">*</span>
+            </div>
+            <input class="wf-input" placeholder="ชื่อผู้ใช้" readonly />
+          </div>
+          <div class="wf-field">
+            <div class="wf-label">
+              เบอร์โทรศัพท์ <span style="color: red">*</span>
+            </div>
+            <input class="wf-input" placeholder="เบอร์โทรศัพท์" readonly />
+          </div>
+          <div class="wf-field">
+            <div class="wf-label">อีเมล <span style="color: red">*</span></div>
+            <input class="wf-input" placeholder="อีเมล" readonly />
+          </div>
+          <div class="wf-field">
+            <div class="wf-label">
+              ที่อยู่ <span style="color: red">*</span>
+            </div>
+            <textarea
+              class="wf-input"
+              placeholder="ที่อยู่"
+              readonly
+            ></textarea>
+          </div>
+          <div class="wf-field">
+            <div class="wf-label">
+              รหัสผ่าน <span style="color: red">*</span>
+            </div>
+            <input class="wf-input" placeholder="รหัสผ่าน" readonly />
+          </div>
+          <div class="wf-btn">สร้างบัญชี</div>
+        </div>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>ฟิลด์:</span> ชื่อจริง, นามสกุล, ชื่อผู้ใช้, เบอร์โทร, อีเมล,
+            ที่อยู่, รหัสผ่าน
+          </div>
+          <div class="field-tag">
+            <span>การตรวจสอบ:</span> ต้องไม่ซ้ำกับอีเมล/เบอร์โทรในระบบ
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 3. SEARCH PRODUCT =============== -->
+      <div class="section">
+        <div class="section-title">INPUT-03 : ค้นหาสินค้า (Product Search)</div>
+        <div class="section-desc">
+          ผู้ใช้พิมพ์ชื่อสินค้าหรือเลือกหมวดหมู่เพื่อกรองสินค้า
+        </div>
+        <div class="wf-admin" style="max-width: 500px">
+          <div class="wf-row" style="align-items: center; gap: 10px">
+            <div class="wf-field" style="flex: 2">
+              <div class="wf-label">ค้นหาสินค้า</div>
+              <input class="wf-input" placeholder="ชื่อสินค้า..." readonly />
+            </div>
+            <div class="wf-field" style="flex: 1">
+              <div class="wf-label">หมวดหมู่</div>
+              <select class="wf-select" disabled>
+                <option>ทั้งหมด</option>
+                <option>เบ็ด</option>
+                <option>รอก</option>
+              </select>
+            </div>
+            <div class="wf-field" style="flex: none; margin-top: 18px">
+              <div class="wf-btn" style="width: auto; padding: 7px 16px">
+                ค้นหา
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>ฟิลด์:</span> ชื่อสินค้า (text), หมวดหมู่ (select)
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 4. PAYMENT =============== -->
+      <div class="section">
+        <div class="section-title">
+          INPUT-04 : แจ้งชำระเงิน (Payment Upload)
+        </div>
+        <div class="section-desc">
+          ผู้ใช้อัปโหลดสลิปการโอนเงิน ระบุวัน-เวลา และเลือกธนาคาร
+        </div>
+        <div class="wf-admin">
+          <div class="wf-title" style="text-align: left; font-size: 14px">
+            การชำระเงิน
+          </div>
+          <div class="wf-field">
+            <div class="wf-label">
+              หลักฐานการโอนเงิน (ภาพสลิป) <span style="color: red">*</span>
+            </div>
+            <div class="wf-file">เลือกไฟล์ภาพ (JPG, PNG, WEBP)</div>
+            <div class="note">*** รองรับขนาดไฟล์สูงสุด 5 MB</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-field">
+              <div class="wf-label">
+                วันที่โอนเงิน <span style="color: red">*</span>
+              </div>
+              <input class="wf-input" placeholder="วว/ดด/ปปปป" readonly />
+            </div>
+            <div class="wf-field">
+              <div class="wf-label">
+                เวลาโอนเงิน <span style="color: red">*</span>
+              </div>
+              <input class="wf-input" placeholder="ชช:นน" readonly />
+            </div>
+          </div>
+          <div class="wf-field">
+            <div class="wf-label">ธนาคาร <span style="color: red">*</span></div>
+            <div class="wf-radio-group">
+              <label class="wf-radio"
+                ><input type="radio" disabled /> ธนาคารกสิกรไทย</label
+              >
+              <label class="wf-radio"
+                ><input type="radio" disabled /> ธนาคารไทยพาณิชย์</label
+              >
+              <label class="wf-radio"
+                ><input type="radio" disabled /> พร้อมเพย์</label
+              >
+            </div>
+          </div>
+          <div class="wf-btn" style="max-width: 160px">แจ้งโอนเงิน</div>
+        </div>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>ฟิลด์:</span> ภาพสลิป (file), วันที่ (date), เวลา (time),
+            ธนาคาร (radio)
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 5. ADMIN: ADD PRODUCT =============== -->
+      <div class="section">
+        <div class="section-title">
+          INPUT-05 : เพิ่ม/แก้ไขสินค้า (Admin – Product Form)
+        </div>
+        <div class="section-desc">
+          แอดมินกรอกข้อมูลสินค้าใหม่หรือแก้ไขสินค้าที่มีอยู่
+        </div>
+        <div class="wf-admin">
+          <div class="wf-field">
+            <div class="wf-label">
+              ชื่อสินค้า <span style="color: red">*</span>
+            </div>
+            <input class="wf-input" placeholder="ชื่อสินค้า" readonly />
+          </div>
+          <div class="wf-row">
+            <div class="wf-field">
+              <div class="wf-label">
+                ราคา (บาท) <span style="color: red">*</span>
+              </div>
+              <input class="wf-input" placeholder="0.00" readonly />
+            </div>
+            <div class="wf-field">
+              <div class="wf-label">
+                จำนวนสต็อก <span style="color: red">*</span>
+              </div>
+              <input class="wf-input" placeholder="0" readonly />
+            </div>
+          </div>
+          <div class="wf-field">
+            <div class="wf-label">
+              หมวดหมู่ <span style="color: red">*</span>
+            </div>
+            <select class="wf-select" disabled>
+              <option>-- เลือกหมวดหมู่ --</option>
+            </select>
+          </div>
+          <div class="wf-field">
+            <div class="wf-label">รายละเอียดสินค้า</div>
+            <textarea
+              class="wf-input"
+              placeholder="รายละเอียด..."
+              readonly
+            ></textarea>
+          </div>
+          <div class="wf-field">
+            <div class="wf-label">รูปภาพสินค้า</div>
+            <div class="wf-file">เลือกไฟล์ภาพ</div>
+          </div>
+          <div class="wf-btn" style="max-width: 140px">บันทึกสินค้า</div>
+        </div>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>ฟิลด์:</span> ชื่อ, ราคา, สต็อก, หมวดหมู่, รายละเอียด, รูปภาพ
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 6. ADMIN: MANAGE USERS =============== -->
+      <div class="section">
+        <div class="section-title">INPUT-06 : จัดการสมาชิก (Admin – Users)</div>
+        <div class="section-desc">
+          แอดมินค้นหา เพิ่ม แก้ไข หรือลบข้อมูลสมาชิก
+        </div>
+        <div class="wf-admin" style="max-width: 600px">
+          <div class="wf-header-bar">
+            <span style="font-weight: 700; font-size: 15px">ข้อมูลสมาชิก</span>
+            <div class="wf-add-btn">+ เพิ่มผู้ใช้ใหม่</div>
+          </div>
+          <input
+            class="wf-search"
+            placeholder="ค้นหา ชื่อ / อีเมล / เบอร์โทร..."
+            readonly
+          />
+          <table class="wf-table">
+            <tr>
+              <th>#</th>
+              <th>ชื่อผู้ใช้</th>
+              <th>ชื่อ-นามสกุล</th>
+              <th>อีเมล</th>
+              <th>สิทธิ์</th>
+              <th>จัดการ</th>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>john_doe</td>
+              <td>จอห์น โด</td>
+              <td>john@email.com</td>
+              <td><span class="badge badge-success">สมาชิก</span></td>
+              <td>แก้ไข | ลบ</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>jane_s</td>
+              <td>เจน สมิธ</td>
+              <td>jane@email.com</td>
+              <td><span class="badge badge-warning">แอดมิน</span></td>
+              <td>แก้ไข | ลบ</td>
+            </tr>
+            <tr>
+              <td class="muted" colspan="6" style="text-align: center">
+                [ แสดงรายการสมาชิกทั้งหมด ]
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div class="field-info">
+          <div class="field-tag"><span>Input:</span> ช่องค้นหา (text)</div>
+          <div class="field-tag">
+            <span>Action:</span> ปุ่มเพิ่ม / แก้ไข / ลบ
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 7. ADMIN: ORDER STATUS =============== -->
+      <div class="section">
+        <div class="section-title">
+          INPUT-07 : อัปเดตสถานะคำสั่งซื้อ (Admin – Order Status)
+        </div>
+        <div class="section-desc">
+          แอดมินเปลี่ยนสถานะคำสั่งซื้อและกรอกเลขพัสดุ
+        </div>
+        <div class="wf-admin">
+          <div class="wf-field">
+            <div class="wf-label">สถานะคำสั่งซื้อ</div>
+            <select class="wf-select" disabled>
+              <option>รอชำระเงิน</option>
+              <option>รอตรวจสอบ</option>
+              <option>รอจัดส่ง</option>
+              <option selected>จัดส่งสำเร็จ</option>
+              <option>ยกเลิก</option>
+            </select>
+          </div>
+          <div class="wf-field">
+            <div class="wf-label">เลขพัสดุ (Tracking Number)</div>
+            <input class="wf-input" placeholder="TH000000000000" readonly />
+          </div>
+          <div class="wf-btn" style="max-width: 160px">บันทึกสถานะ</div>
+        </div>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>ฟิลด์:</span> สถานะ (select), เลขพัสดุ (text)
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 8. PROFILE EDIT =============== -->
+      <div class="section">
+        <div class="section-title">
+          INPUT-08 : แก้ไขข้อมูลโปรไฟล์ (Profile Edit)
+        </div>
+        <div class="section-desc">ผู้ใช้แก้ไขข้อมูลส่วนตัวของตนเอง</div>
+        <div class="wf-admin">
+          <div class="wf-row">
+            <div class="wf-field">
+              <div class="wf-label">
+                ชื่อจริง <span style="color: red">*</span>
+              </div>
+              <input class="wf-input" placeholder="ชื่อจริง" readonly />
+            </div>
+            <div class="wf-field">
+              <div class="wf-label">
+                นามสกุล <span style="color: red">*</span>
+              </div>
+              <input class="wf-input" placeholder="นามสกุล" readonly />
+            </div>
+          </div>
+          <div class="wf-field">
+            <div class="wf-label">
+              เบอร์โทรศัพท์ <span style="color: red">*</span>
+            </div>
+            <input class="wf-input" placeholder="เบอร์โทรศัพท์" readonly />
+          </div>
+          <div class="wf-field">
+            <div class="wf-label">อีเมล <span style="color: red">*</span></div>
+            <input class="wf-input" placeholder="อีเมล" readonly />
+          </div>
+          <div class="wf-field">
+            <div class="wf-label">ที่อยู่</div>
+            <textarea
+              class="wf-input"
+              placeholder="ที่อยู่"
+              readonly
+            ></textarea>
+          </div>
+          <div class="wf-btn" style="max-width: 140px">บันทึกข้อมูล</div>
+        </div>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>ฟิลด์:</span> ชื่อ, นามสกุล, เบอร์โทร, อีเมล, ที่อยู่
+          </div>
+        </div>
+      </div>
+
+      <p
+        style="
+          text-align: center;
+          color: #aaa;
+          font-size: 11px;
+          margin-top: 20px;
+        "
+      >
+        ระบบขายอุปกรณ์ตกปลาร้าน ก.กีฬา ออนไลน์ — Input Design Draft v1.0
+      </p>
+    </div>
+  </body>
+</html>

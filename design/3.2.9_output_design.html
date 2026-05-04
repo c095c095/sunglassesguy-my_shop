@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <title>3.2.9 การออกแบบส่วนแสดงผลข้อมูล (Output Design)</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Sarabun", sans-serif;
+        background: #f5f5f5;
+        color: #222;
+        font-size: 14px;
+      }
+      @import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap");
+
+      .page {
+        max-width: 900px;
+        margin: 30px auto;
+        padding: 20px;
+      }
+      h1 {
+        font-size: 22px;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 6px;
+      }
+      .subtitle {
+        text-align: center;
+        color: #555;
+        margin-bottom: 30px;
+        font-size: 13px;
+      }
+
+      .section {
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        margin-bottom: 30px;
+        padding: 20px;
+      }
+      .section-title {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 4px;
+        border-bottom: 2px solid #1565c0;
+        padding-bottom: 6px;
+        color: #1565c0;
+      }
+      .section-desc {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 16px;
+      }
+
+      /* table */
+      .wf-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+      .wf-table th {
+        background: #e3f2fd;
+        border: 1px solid #ccc;
+        padding: 6px 10px;
+        text-align: left;
+      }
+      .wf-table td {
+        border: 1px solid #ddd;
+        padding: 6px 10px;
+        color: #444;
+      }
+      .wf-table td.muted {
+        color: #bbb;
+        font-style: italic;
+        text-align: center;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 11px;
+      }
+      .badge-success {
+        background: #c8e6c9;
+        color: #2e7d32;
+      }
+      .badge-warning {
+        background: #fff9c4;
+        color: #f57f17;
+      }
+      .badge-danger {
+        background: #ffcdd2;
+        color: #c62828;
+      }
+      .badge-info {
+        background: #e3f2fd;
+        color: #1565c0;
+      }
+      .badge-gray {
+        background: #eeeeee;
+        color: #555;
+      }
+
+      /* card group */
+      .card-row {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .wf-card {
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 14px 18px;
+        flex: 1;
+        min-width: 120px;
+        background: #fafafa;
+      }
+      .wf-card .label {
+        font-size: 11px;
+        color: #888;
+      }
+      .wf-card .value {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1565c0;
+        margin-top: 4px;
+      }
+      .wf-card .sub {
+        font-size: 11px;
+        color: #aaa;
+        margin-top: 2px;
+      }
+
+      /* product grid */
+      .prod-grid {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .prod-card {
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        width: 140px;
+        padding: 10px;
+        background: #fafafa;
+        text-align: center;
+      }
+      .prod-img {
+        width: 100%;
+        height: 80px;
+        background: #e0e0e0;
+        border-radius: 4px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #aaa;
+        font-size: 11px;
+      }
+      .prod-name {
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .prod-price {
+        font-size: 13px;
+        color: #c62828;
+        font-weight: 700;
+        margin-top: 4px;
+      }
+      .prod-stock {
+        font-size: 11px;
+        color: #888;
+      }
+
+      /* order detail */
+      .wf-box {
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 14px;
+        background: #fafafa;
+        margin-bottom: 12px;
+      }
+      .wf-row2 {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .wf-col {
+        flex: 1;
+        min-width: 180px;
+      }
+      .info-item {
+        margin-bottom: 8px;
+        font-size: 13px;
+      }
+      .info-item .lbl {
+        color: #888;
+        font-size: 11px;
+      }
+
+      /* report chart placeholder */
+      .chart-ph {
+        width: 100%;
+        height: 140px;
+        background: #e3f2fd;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #90caf9;
+        font-size: 13px;
+        border: 1px dashed #90caf9;
+        margin-bottom: 14px;
+      }
+
+      /* alert */
+      .wf-alert {
+        border-radius: 6px;
+        padding: 10px 16px;
+        font-size: 13px;
+        margin-bottom: 12px;
+      }
+      .wf-alert.success {
+        background: #e8f5e9;
+        border: 1px solid #a5d6a7;
+        color: #2e7d32;
+      }
+      .wf-alert.danger {
+        background: #ffebee;
+        border: 1px solid #ef9a9a;
+        color: #c62828;
+      }
+      .wf-alert.info {
+        background: #e3f2fd;
+        border: 1px solid #90caf9;
+        color: #1565c0;
+      }
+
+      .field-info {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .field-tag {
+        background: #e3f2fd;
+        border: 1px solid #90caf9;
+        border-radius: 4px;
+        padding: 4px 10px;
+        font-size: 11px;
+      }
+      .field-tag span {
+        font-weight: 700;
+        color: #1565c0;
+      }
+
+      .note {
+        font-size: 11px;
+        color: #888;
+        margin-top: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <h1>3.2.9 การออกแบบส่วนแสดงผลข้อมูล (Output Design)</h1>
+      <p class="subtitle">ระบบขายอุปกรณ์ตกปลาร้าน ก.กีฬา ออนไลน์</p>
+
+      <!-- =============== 1. HOME / PRODUCT LIST =============== -->
+      <div class="section">
+        <div class="section-title">
+          OUTPUT-01 : หน้าแสดงรายการสินค้า (Product Listing)
+        </div>
+        <div class="section-desc">
+          แสดงสินค้าทั้งหมดในระบบพร้อมราคาและสต็อก
+          ผู้ใช้สามารถกดดูรายละเอียดหรือเพิ่มลงตะกร้าได้
+        </div>
+        <div class="prod-grid">
+          <div class="prod-card">
+            <div class="prod-img">[ รูปสินค้า ]</div>
+            <div class="prod-name">เบ็ดตกปลา รุ่น A</div>
+            <div class="prod-price">฿ 350.00</div>
+            <div class="prod-stock">คงเหลือ: 20 ชิ้น</div>
+          </div>
+          <div class="prod-card">
+            <div class="prod-img">[ รูปสินค้า ]</div>
+            <div class="prod-name">รอกตกปลา Pro</div>
+            <div class="prod-price">฿ 1,200.00</div>
+            <div class="prod-stock">คงเหลือ: 5 ชิ้น</div>
+          </div>
+          <div class="prod-card">
+            <div class="prod-img">[ รูปสินค้า ]</div>
+            <div class="prod-name">สาย PE 8 เส้น</div>
+            <div class="prod-price">฿ 180.00</div>
+            <div class="prod-stock">คงเหลือ: 50 ชิ้น</div>
+          </div>
+          <div class="prod-card">
+            <div class="prod-img">[ รูปสินค้า ]</div>
+            <div class="prod-name">ลูกดิ่ง ชุด 10</div>
+            <div class="prod-price">฿ 75.00</div>
+            <div class="prod-stock">
+              คงเหลือ: 0 ชิ้น <span class="badge badge-danger">หมด</span>
+            </div>
+          </div>
+        </div>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>แสดง:</span> ชื่อสินค้า, ราคา, รูปภาพ, สต็อก, ปุ่มดูรายละเอียด
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 2. PRODUCT DETAIL =============== -->
+      <div class="section">
+        <div class="section-title">
+          OUTPUT-02 : หน้ารายละเอียดสินค้า (Product Detail)
+        </div>
+        <div class="section-desc">
+          แสดงข้อมูลสินค้าแบบละเอียด พร้อมปุ่มเพิ่มลงตะกร้า
+        </div>
+        <div class="wf-box">
+          <div class="wf-row2">
+            <div class="wf-col" style="max-width: 160px">
+              <div class="prod-img" style="height: 130px; font-size: 13px">
+                [ รูปสินค้า ]
+              </div>
+            </div>
+            <div class="wf-col">
+              <div class="info-item">
+                <div class="lbl">ชื่อสินค้า</div>
+                <strong>เบ็ดตกปลา รุ่น A</strong>
+              </div>
+              <div class="info-item">
+                <div class="lbl">ราคา</div>
+                <strong style="color: #c62828; font-size: 18px"
+                  >฿ 350.00</strong
+                >
+              </div>
+              <div class="info-item">
+                <div class="lbl">หมวดหมู่</div>
+                เบ็ด
+              </div>
+              <div class="info-item">
+                <div class="lbl">สต็อกคงเหลือ</div>
+                20 ชิ้น
+              </div>
+              <div class="info-item">
+                <div class="lbl">รายละเอียด</div>
+                เบ็ดตกปลาคุณภาพสูง เหมาะสำหรับการตกปลาน้ำจืดและน้ำเค็ม...
+              </div>
+              <div style="display: flex; gap: 10px; margin-top: 10px">
+                <div
+                  style="
+                    border: 1px solid #aaa;
+                    border-radius: 4px;
+                    padding: 5px 14px;
+                    font-size: 12px;
+                    background: #fff;
+                  "
+                >
+                  - &nbsp; 1 &nbsp; +
+                </div>
+                <div
+                  style="
+                    background: #1565c0;
+                    color: #fff;
+                    border-radius: 4px;
+                    padding: 6px 18px;
+                    font-size: 12px;
+                  "
+                >
+                  เพิ่มลงตะกร้า
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>แสดง:</span> ชื่อ, ราคา, หมวดหมู่, สต็อก, รายละเอียด, รูปภาพ
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 3. CART =============== -->
+      <div class="section">
+        <div class="section-title">
+          OUTPUT-03 : ตะกร้าสินค้า (Shopping Cart)
+        </div>
+        <div class="section-desc">
+          แสดงรายการสินค้าในตะกร้า พร้อมยอดรวม และปุ่มดำเนินการต่อ
+        </div>
+        <table class="wf-table" style="margin-bottom: 12px">
+          <tr>
+            <th>สินค้า</th>
+            <th>ราคา/ชิ้น</th>
+            <th>จำนวน</th>
+            <th>ราคารวม</th>
+            <th></th>
+          </tr>
+          <tr>
+            <td>เบ็ดตกปลา รุ่น A</td>
+            <td>฿350.00</td>
+            <td>
+              <span
+                style="
+                  border: 1px solid #aaa;
+                  padding: 2px 10px;
+                  border-radius: 4px;
+                "
+                >1</span
+              >
+            </td>
+            <td style="color: #c62828; font-weight: 700">฿350.00</td>
+            <td>✕</td>
+          </tr>
+          <tr>
+            <td>รอกตกปลา Pro</td>
+            <td>฿1,200.00</td>
+            <td>
+              <span
+                style="
+                  border: 1px solid #aaa;
+                  padding: 2px 10px;
+                  border-radius: 4px;
+                "
+                >2</span
+              >
+            </td>
+            <td style="color: #c62828; font-weight: 700">฿2,400.00</td>
+            <td>✕</td>
+          </tr>
+        </table>
+        <div
+          style="
+            text-align: right;
+            font-size: 13px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+          "
+        >
+          ยอดรวมสุทธิ:
+          <strong style="color: #c62828; font-size: 16px">฿2,750.00</strong
+          ><br />
+          <span style="font-size: 11px; color: #2e7d32"
+            >✓ ได้รับสิทธิ์จัดส่งฟรี!</span
+          ><br />
+          <div
+            style="
+              display: inline-block;
+              background: #1565c0;
+              color: #fff;
+              border-radius: 4px;
+              padding: 7px 20px;
+              font-size: 13px;
+              margin-top: 8px;
+            "
+          >
+            ดำเนินการต่อ
+          </div>
+        </div>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>แสดง:</span> ชื่อสินค้า, ราคา/ชิ้น, จำนวน, ราคารวม, ยอดสุทธิ,
+            ส่งฟรี
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 4. ORDER DETAIL (MEMBER) =============== -->
+      <div class="section">
+        <div class="section-title">
+          OUTPUT-04 : รายละเอียดคำสั่งซื้อ (Order Detail – Member)
+        </div>
+        <div class="section-desc">
+          แสดงข้อมูลคำสั่งซื้อ สถานะการสั่งซื้อ ที่อยู่จัดส่ง และรายการสินค้า
+        </div>
+        <div class="wf-box">
+          <div class="wf-row2">
+            <div class="wf-col">
+              <div class="info-item">
+                <div class="lbl">หมายเลขคำสั่งซื้อ</div>
+                <strong>#ORDER-0042</strong>
+              </div>
+              <div class="info-item">
+                <div class="lbl">วันที่สั่งซื้อ</div>
+                4 พฤษภาคม 2568 14:30
+              </div>
+              <div class="info-item">
+                <div class="lbl">สถานะ</div>
+                <span class="badge badge-warning">รอตรวจสอบ</span>
+              </div>
+            </div>
+            <div class="wf-col">
+              <div class="info-item">
+                <div class="lbl">ที่อยู่จัดส่ง</div>
+                123 ถ.สุขุมวิท กรุงเทพ 10110
+              </div>
+              <div class="info-item">
+                <div class="lbl">ค่าจัดส่ง</div>
+                ฿0.00 (ส่งฟรี)
+              </div>
+              <div class="info-item">
+                <div class="lbl">ยอดรวม</div>
+                <strong style="color: #c62828">฿2,750.00</strong>
+              </div>
+            </div>
+          </div>
+          <hr style="margin: 12px 0; border-color: #eee" />
+          <table class="wf-table">
+            <tr>
+              <th>สินค้า</th>
+              <th>ราคา</th>
+              <th>จำนวน</th>
+              <th>รวม</th>
+            </tr>
+            <tr>
+              <td>เบ็ดตกปลา รุ่น A</td>
+              <td>฿350</td>
+              <td>1</td>
+              <td>฿350</td>
+            </tr>
+            <tr>
+              <td>รอกตกปลา Pro</td>
+              <td>฿1,200</td>
+              <td>2</td>
+              <td>฿2,400</td>
+            </tr>
+          </table>
+        </div>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>แสดง:</span> เลขออเดอร์, วันที่, สถานะ, ที่อยู่, รายการสินค้า,
+            ยอดรวม
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 5. ORDER HISTORY =============== -->
+      <div class="section">
+        <div class="section-title">
+          OUTPUT-05 : ประวัติการสั่งซื้อ (Order History)
+        </div>
+        <div class="section-desc">
+          แสดงรายการคำสั่งซื้อทั้งหมดของสมาชิก พร้อมสถานะ
+        </div>
+        <table class="wf-table">
+          <tr>
+            <th>#คำสั่งซื้อ</th>
+            <th>วันที่</th>
+            <th>ยอดรวม</th>
+            <th>สถานะ</th>
+            <th>รายละเอียด</th>
+          </tr>
+          <tr>
+            <td>#ORDER-0042</td>
+            <td>4 พ.ค. 2568</td>
+            <td>฿2,750</td>
+            <td><span class="badge badge-warning">รอตรวจสอบ</span></td>
+            <td><a style="color: #1565c0">ดูรายละเอียด</a></td>
+          </tr>
+          <tr>
+            <td>#ORDER-0038</td>
+            <td>1 พ.ค. 2568</td>
+            <td>฿680</td>
+            <td><span class="badge badge-success">จัดส่งสำเร็จ</span></td>
+            <td><a style="color: #1565c0">ดูรายละเอียด</a></td>
+          </tr>
+          <tr>
+            <td>#ORDER-0031</td>
+            <td>20 เม.ย. 2568</td>
+            <td>฿350</td>
+            <td><span class="badge badge-danger">ยกเลิก</span></td>
+            <td><a style="color: #1565c0">ดูรายละเอียด</a></td>
+          </tr>
+        </table>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>แสดง:</span> เลขออเดอร์, วันที่, ยอดรวม, สถานะ,
+            ปุ่มดูรายละเอียด
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 6. ADMIN DASHBOARD =============== -->
+      <div class="section">
+        <div class="section-title">
+          OUTPUT-06 : แดชบอร์ดแอดมิน (Admin Dashboard)
+        </div>
+        <div class="section-desc">
+          แสดงข้อมูลสรุปภาพรวมระบบ เช่น ยอดขาย สินค้า สมาชิก
+          คำสั่งซื้อรอดำเนินการ
+        </div>
+        <div class="card-row">
+          <div class="wf-card">
+            <div class="label">ยอดขายรวม</div>
+            <div class="value">฿48,500</div>
+            <div class="sub">เดือนนี้</div>
+          </div>
+          <div class="wf-card">
+            <div class="label">คำสั่งซื้อทั้งหมด</div>
+            <div class="value">132</div>
+            <div class="sub">รายการ</div>
+          </div>
+          <div class="wf-card">
+            <div class="label">สินค้าทั้งหมด</div>
+            <div class="value">58</div>
+            <div class="sub">รายการ</div>
+          </div>
+          <div class="wf-card">
+            <div class="label">สมาชิกทั้งหมด</div>
+            <div class="value">74</div>
+            <div class="sub">คน</div>
+          </div>
+        </div>
+        <div class="chart-ph">[ กราฟยอดขายรายเดือน (Bar Chart) ]</div>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>แสดง:</span> ยอดขาย, จำนวนออเดอร์, สินค้า, สมาชิก, กราฟ
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 7. ADMIN ORDER LIST =============== -->
+      <div class="section">
+        <div class="section-title">
+          OUTPUT-07 : รายการคำสั่งซื้อ (Admin – Orders)
+        </div>
+        <div class="section-desc">
+          แอดมินดูรายการคำสั่งซื้อทั้งหมด กรองตามสถานะ และคลิกจัดการ
+        </div>
+        <table class="wf-table">
+          <tr>
+            <th>#</th>
+            <th>ลูกค้า</th>
+            <th>วันที่</th>
+            <th>ยอดรวม</th>
+            <th>สถานะ</th>
+            <th>จัดการ</th>
+          </tr>
+          <tr>
+            <td>42</td>
+            <td>จอห์น โด</td>
+            <td>4 พ.ค. 68</td>
+            <td>฿2,750</td>
+            <td><span class="badge badge-warning">รอตรวจสอบ</span></td>
+            <td><a style="color: #1565c0">ดูรายละเอียด</a></td>
+          </tr>
+          <tr>
+            <td>41</td>
+            <td>เจน สมิธ</td>
+            <td>3 พ.ค. 68</td>
+            <td>฿500</td>
+            <td><span class="badge badge-info">รอจัดส่ง</span></td>
+            <td><a style="color: #1565c0">ดูรายละเอียด</a></td>
+          </tr>
+          <tr>
+            <td>40</td>
+            <td>สมชาย ใจดี</td>
+            <td>1 พ.ค. 68</td>
+            <td>฿180</td>
+            <td><span class="badge badge-success">จัดส่งสำเร็จ</span></td>
+            <td><a style="color: #1565c0">ดูรายละเอียด</a></td>
+          </tr>
+        </table>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>แสดง:</span> เลขออเดอร์, ชื่อลูกค้า, วันที่, ยอดรวม, สถานะ,
+            ปุ่มจัดการ
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 8. REPORT =============== -->
+      <div class="section">
+        <div class="section-title">OUTPUT-08 : รายงานสรุป (Reports)</div>
+        <div class="section-desc">
+          แสดงรายงานสรุปยอดขาย สินค้าขายดี สต็อก และสมาชิก พร้อมฟังก์ชันพิมพ์
+        </div>
+        <div class="card-row">
+          <div class="wf-card">
+            <div class="label">รายได้รวม</div>
+            <div class="value">฿48,500</div>
+          </div>
+          <div class="wf-card">
+            <div class="label">ออเดอร์สำเร็จ</div>
+            <div class="value">98</div>
+          </div>
+          <div class="wf-card">
+            <div class="label">สินค้าขายดีอันดับ 1</div>
+            <div class="value" style="font-size: 14px">รอกตกปลา Pro</div>
+          </div>
+        </div>
+        <div class="chart-ph">[ กราฟสินค้าขายดี Top 5 (Bar Chart) ]</div>
+        <table class="wf-table">
+          <tr>
+            <th>#</th>
+            <th>ชื่อสินค้า</th>
+            <th>จำนวนที่ขาย</th>
+            <th>รายได้รวม</th>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>รอกตกปลา Pro</td>
+            <td>42 ชิ้น</td>
+            <td>฿50,400</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>เบ็ดตกปลา รุ่น A</td>
+            <td>38 ชิ้น</td>
+            <td>฿13,300</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>สาย PE 8 เส้น</td>
+            <td>31 ชิ้น</td>
+            <td>฿5,580</td>
+          </tr>
+        </table>
+        <div style="margin-top: 12px">
+          <div
+            style="
+              display: inline-block;
+              background: #e3f2fd;
+              border: 1px solid #90caf9;
+              border-radius: 4px;
+              padding: 6px 16px;
+              font-size: 12px;
+              color: #1565c0;
+            "
+          >
+            🖨️ พิมพ์รายงาน
+          </div>
+        </div>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>แสดง:</span> ยอดรวม, สินค้าขายดี, กราฟ, ตาราง, ปุ่มพิมพ์
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 9. ALERT MESSAGES =============== -->
+      <div class="section">
+        <div class="section-title">
+          OUTPUT-09 : ข้อความแจ้งเตือน (System Alerts)
+        </div>
+        <div class="section-desc">แสดงข้อความตอบสนองต่อการกระทำของผู้ใช้</div>
+        <div class="wf-alert success">✓ สมัครสมาชิกเรียบร้อย!</div>
+        <div class="wf-alert info">ℹ️ สินค้าในตะกร้ามีการเปลี่ยนแปลง!</div>
+        <div class="wf-alert danger">
+          ✕ รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง
+        </div>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>ประเภท:</span> Success (สีเขียว), Info (สีน้ำเงิน), Error
+            (สีแดง)
+          </div>
+        </div>
+      </div>
+
+      <p
+        style="
+          text-align: center;
+          color: #aaa;
+          font-size: 11px;
+          margin-top: 20px;
+        "
+      >
+        ระบบขายอุปกรณ์ตกปลาร้าน ก.กีฬา ออนไลน์ — Output Design Draft v1.0
+      </p>
+    </div>
+  </body>
+</html>
