@@ -765,6 +765,413 @@
         </div>
       </div>
 
+      <!-- =============== 10. PROFILE =============== -->
+      <div class="section">
+        <div class="section-title">OUTPUT-10 : หน้าโปรไฟล์ (User Profile)</div>
+        <div class="section-desc">แสดงข้อมูลส่วนตัวของสมาชิกที่เข้าสู่ระบบ</div>
+        <div class="wf-box">
+          <div class="wf-row2">
+            <div class="wf-col">
+              <div class="info-item">
+                <div class="lbl">ชื่อผู้ใช้</div>
+                <strong>john_doe</strong>
+              </div>
+              <div class="info-item">
+                <div class="lbl">ชื่อ-นามสกุล</div>
+                จอห์น โด
+              </div>
+              <div class="info-item">
+                <div class="lbl">เบอร์โทรศัพท์</div>
+                064-998-5666
+              </div>
+            </div>
+            <div class="wf-col">
+              <div class="info-item">
+                <div class="lbl">อีเมล</div>
+                john@email.com
+              </div>
+              <div class="info-item">
+                <div class="lbl">ที่อยู่</div>
+                123 ถ.สุขุมวิท กรุงเทพ 10110
+              </div>
+              <div class="info-item">
+                <div class="lbl">วันที่สมัคร</div>
+                1 มกราคม 2568
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 12px">
+            <div
+              style="
+                background: #e3f2fd;
+                border: 1px solid #90caf9;
+                border-radius: 4px;
+                padding: 6px 14px;
+                font-size: 12px;
+                color: #1565c0;
+              "
+            >
+              แก้ไขโปรไฟล์
+            </div>
+            <div
+              style="
+                background: #fff3e0;
+                border: 1px solid #ffcc80;
+                border-radius: 4px;
+                padding: 6px 14px;
+                font-size: 12px;
+                color: #e65100;
+              "
+            >
+              เปลี่ยนรหัสผ่าน
+            </div>
+          </div>
+        </div>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>แสดง:</span> ชื่อผู้ใช้, ชื่อ-นามสกุล, เบอร์โทร, อีเมล,
+            ที่อยู่, วันที่สมัคร
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 11. CONTACT =============== -->
+      <div class="section">
+        <div class="section-title">OUTPUT-11 : หน้าติดต่อเรา (Contact)</div>
+        <div class="section-desc">
+          แสดงข้อมูลติดต่อร้านค้า เวลาทำการ และแผนที่
+        </div>
+        <div class="wf-box">
+          <div class="wf-row2">
+            <div class="wf-col">
+              <div class="info-item">
+                <div class="lbl">เวลาทำการ</div>
+                6:00 ถึง 19:30 เปิดทุกวัน
+              </div>
+              <div class="info-item">
+                <div class="lbl">ที่อยู่</div>
+                51 หมู่1 ตำบลบางคู้ อำเภอท่าวุ้ง จังหวัดลพบุรี 15150
+              </div>
+            </div>
+            <div class="wf-col">
+              <div class="info-item">
+                <div class="lbl">เบอร์โทรศัพท์</div>
+                064-998-5666
+              </div>
+              <div class="info-item">
+                <div class="lbl">อีเมล</div>
+                NatnSon@gmail.com
+              </div>
+            </div>
+          </div>
+          <div
+            style="
+              width: 100%;
+              height: 80px;
+              background: #e3f2fd;
+              border-radius: 6px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: #90caf9;
+              font-size: 13px;
+              border: 1px dashed #90caf9;
+              margin-top: 12px;
+            "
+          >
+            [ Google Maps แผนที่ร้าน ]
+          </div>
+        </div>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>แสดง:</span> เวลาทำการ, ที่อยู่, เบอร์โทร, อีเมล, แผนที่
+            Google Maps
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 12. ADMIN: PRODUCT TYPES OUTPUT =============== -->
+      <div class="section">
+        <div class="section-title">
+          OUTPUT-12 : รายการประเภทสินค้า (Admin – Product Types)
+        </div>
+        <div class="section-desc">
+          แสดงรายการประเภทสินค้าทั้งหมด พร้อมจำนวนสินค้าในแต่ละประเภท
+        </div>
+        <table class="wf-table">
+          <tr>
+            <th>#</th>
+            <th>รูปภาพ</th>
+            <th>ชื่อประเภท</th>
+            <th>จำนวนสินค้า</th>
+            <th>จัดการ</th>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td style="color: #aaa">[รูป]</td>
+            <td>แว่นกันแดด</td>
+            <td>12</td>
+            <td>แก้ไข | ลบ</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td style="color: #aaa">[รูป]</td>
+            <td>แว่นตา</td>
+            <td>8</td>
+            <td>แก้ไข | ลบ</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td style="color: #aaa">[รูป]</td>
+            <td>เลนส์</td>
+            <td>15</td>
+            <td>แก้ไข | <span style="color: #ccc">ลบ</span></td>
+          </tr>
+        </table>
+        <div class="note">
+          * ไม่สามารถลบประเภทสินค้าได้ ถ้ามีสินค้าที่ใช้ประเภทนั้นๆอยู่
+        </div>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>แสดง:</span> ลำดับ, รูปภาพ, ชื่อประเภท, จำนวนสินค้า,
+            ปุ่มจัดการ, Pagination
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 13. ADMIN: PRODUCT STOCKS OUTPUT =============== -->
+      <div class="section">
+        <div class="section-title">
+          OUTPUT-13 : สินค้าคงคลัง (Admin – Product Stocks)
+        </div>
+        <div class="section-desc">
+          แสดงรายการสินค้าพร้อมจำนวนคงเหลือและสถานะสต็อก
+        </div>
+        <table class="wf-table">
+          <tr>
+            <th>#</th>
+            <th>ชื่อสินค้า</th>
+            <th>ประเภท</th>
+            <th>คงเหลือ</th>
+            <th>สถานะ</th>
+            <th>จัดการ</th>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>แว่นกันแดด รุ่น A</td>
+            <td>แว่นกันแดด</td>
+            <td style="text-align: right">0</td>
+            <td><span class="badge badge-danger">สินค้าหมด</span></td>
+            <td><a style="color: #1565c0">เพิ่มสต็อก</a></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>แว่นตา รุ่น B</td>
+            <td>แว่นตา</td>
+            <td style="text-align: right">5</td>
+            <td><span class="badge badge-warning">ใกล้หมด</span></td>
+            <td><a style="color: #1565c0">เพิ่มสต็อก</a></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>เลนส์กรองแสง Pro</td>
+            <td>เลนส์</td>
+            <td style="text-align: right">50</td>
+            <td><span class="badge badge-success">ปกติ</span></td>
+            <td><a style="color: #1565c0">เพิ่มสต็อก</a></td>
+          </tr>
+        </table>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>แสดง:</span> ชื่อสินค้า, ประเภท, จำนวนคงเหลือ, สถานะ
+            (ปกติ/ใกล้หมด/หมด), ปุ่มเพิ่มสต็อก
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 14. ADMIN: BANNERS OUTPUT =============== -->
+      <div class="section">
+        <div class="section-title">OUTPUT-14 : ป้ายโฆษณา (Admin – Banners)</div>
+        <div class="section-desc">
+          แสดงรายการป้ายโฆษณาพร้อมตัวอย่าง Carousel และสถานะเปิด/ปิด
+        </div>
+        <div class="chart-ph" style="height: 100px">
+          [ ตัวอย่าง Carousel ป้ายโฆษณา (Slider) ]
+        </div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap">
+          <div
+            style="
+              border: 1px solid #ddd;
+              border-radius: 6px;
+              padding: 10px;
+              width: 160px;
+              background: #fafafa;
+              text-align: center;
+            "
+          >
+            <div
+              style="
+                width: 100%;
+                height: 60px;
+                background: #e0e0e0;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #aaa;
+                font-size: 11px;
+              "
+            >
+              [ Banner 1 ]
+            </div>
+            <div style="font-size: 11px; margin-top: 6px">
+              <span class="badge badge-success">เปิดใช้งาน</span>
+            </div>
+            <div style="font-size: 11px; color: #888; margin-top: 4px">
+              ลำดับ: 1 | อัพเดท: 4/5/68
+            </div>
+          </div>
+          <div
+            style="
+              border: 1px solid #ddd;
+              border-radius: 6px;
+              padding: 10px;
+              width: 160px;
+              background: #fafafa;
+              text-align: center;
+            "
+          >
+            <div
+              style="
+                width: 100%;
+                height: 60px;
+                background: #e0e0e0;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #aaa;
+                font-size: 11px;
+              "
+            >
+              [ Banner 2 ]
+            </div>
+            <div style="font-size: 11px; margin-top: 6px">
+              <span class="badge badge-gray">ปิดใช้งาน</span>
+            </div>
+            <div style="font-size: 11px; color: #888; margin-top: 4px">
+              ลำดับ: 2 | อัพเดท: 3/5/68
+            </div>
+          </div>
+        </div>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>แสดง:</span> รูปภาพ, สถานะ, ลำดับ, วันอัพเดท, ตัวอย่าง
+            Carousel
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 15. ADMIN: REPORT SUB-PAGES =============== -->
+      <div class="section">
+        <div class="section-title">
+          OUTPUT-15 : รายงานย่อย (Admin – Report Sub-Pages)
+        </div>
+        <div class="section-desc">
+          รายงานย่อยทั้งหมดที่แอดมินสามารถเข้าดูได้จากเมนูรายงาน
+        </div>
+        <div class="card-row">
+          <div class="wf-card">
+            <div class="label">📊 รายงานสมาชิก</div>
+            <div class="sub">report-users</div>
+          </div>
+          <div class="wf-card">
+            <div class="label">📦 รายงานสินค้า</div>
+            <div class="sub">report-products</div>
+          </div>
+          <div class="wf-card">
+            <div class="label">💰 รายงานการขาย</div>
+            <div class="sub">report-sales</div>
+          </div>
+        </div>
+        <div class="card-row">
+          <div class="wf-card">
+            <div class="label">🏦 รายงานการชำระเงิน</div>
+            <div class="sub">report-payments</div>
+          </div>
+          <div class="wf-card">
+            <div class="label">📈 รายงานยอดรายได้</div>
+            <div class="sub">report-revenue</div>
+          </div>
+          <div class="wf-card">
+            <div class="label">🏆 รายงานสินค้าขายดี</div>
+            <div class="sub">report-best-sellers</div>
+          </div>
+        </div>
+        <div class="card-row">
+          <div class="wf-card">
+            <div class="label">📋 รายงานสต็อก</div>
+            <div class="sub">report-product-stocks</div>
+          </div>
+          <div class="wf-card">
+            <div class="label">🏷️ รายงานประเภทสินค้า</div>
+            <div class="sub">report-product-types</div>
+          </div>
+          <div class="wf-card">
+            <div class="label">👤 รายงานสิทธิ์ผู้ใช้</div>
+            <div class="sub">report-user-roles</div>
+          </div>
+        </div>
+        <div class="chart-ph">[ กราฟ / ตาราง ตามแต่ละรายงาน ]</div>
+        <div
+          style="
+            display: inline-block;
+            background: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 4px;
+            padding: 6px 16px;
+            font-size: 12px;
+            color: #1565c0;
+          "
+        >
+          🖨️ พิมพ์รายงาน
+        </div>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>แสดง:</span> ข้อมูลตาราง, กราฟ, ตัวกรองวันที่, ปุ่มพิมพ์ — รวม
+            9 รายงานย่อย
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== 16. FAQ =============== -->
+      <div class="section">
+        <div class="section-title">OUTPUT-16 : วิธีการสั่งซื้อ (FAQ)</div>
+        <div class="section-desc">แสดงขั้นตอนวิธีการสั่งซื้อสินค้าในระบบ</div>
+        <div class="wf-box">
+          <div class="info-item">
+            <strong>ขั้นตอนที่ 1:</strong> เลือกสินค้าที่ต้องการ
+          </div>
+          <div class="info-item">
+            <strong>ขั้นตอนที่ 2:</strong> เพิ่มสินค้าลงตะกร้า
+          </div>
+          <div class="info-item">
+            <strong>ขั้นตอนที่ 3:</strong> กรอกข้อมูลจัดส่ง
+          </div>
+          <div class="info-item">
+            <strong>ขั้นตอนที่ 4:</strong> ชำระเงินและอัปโหลดสลิป
+          </div>
+          <div class="info-item">
+            <strong>ขั้นตอนที่ 5:</strong> รอแอดมินตรวจสอบและจัดส่ง
+          </div>
+        </div>
+        <div class="field-info">
+          <div class="field-tag">
+            <span>แสดง:</span> ขั้นตอนการสั่งซื้อทั้งหมด
+          </div>
+        </div>
+      </div>
+
       <p
         style="
           text-align: center;
@@ -773,7 +1180,7 @@
           margin-top: 20px;
         "
       >
-        ระบบขายอุปกรณ์ตกปลาร้าน ก.กีฬา ออนไลน์ — Output Design Draft v1.0
+        ระบบร้านค้าออนไลน์จำหน่ายแว่นกันแดด My Shop — Output Design Draft v2.0
       </p>
     </div>
   </body>
